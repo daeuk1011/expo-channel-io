@@ -1,12 +1,14 @@
-import { NativeModule, requireNativeModule } from 'expo';
+import { NativeModule, requireNativeModule } from "expo";
 
-import { ExpoChannelIoModuleEvents } from './ExpoChannelIo.types';
+import { BootConfig, BootStatus } from "./ExpoChannelIo.types";
 
-declare class ExpoChannelIoModule extends NativeModule<ExpoChannelIoModuleEvents> {
-  PI: number;
-  hello(): string;
-  setValueAsync(value: string): Promise<void>;
+declare class ExpoChannelIoModule extends NativeModule {
+  boot(setting: BootConfig): Promise<BootStatus>;
+  showChannelButton(): Promise<void>;
+  hideChannelButton(): Promise<void>;
+  showMessenger(): Promise<void>;
+  hideMessenger(): Promise<void>;
 }
 
 // This call loads the native module object from the JSI.
-export default requireNativeModule<ExpoChannelIoModule>('ExpoChannelIo');
+export default requireNativeModule<ExpoChannelIoModule>("ExpoChannelIo");

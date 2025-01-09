@@ -41,3 +41,7 @@ android {
     abortOnError false
   }
 }
+
+dependencies {
+  implementation 'io.channel:plugin-android:12.4.0'
+}

@@ -18,12 +18,12 @@ Pod::Spec.new do |s|
   s.source         = { git: 'https://github.com/daeuk1011/expo-channel-io' }
   s.static_framework = true
 
-  s.dependency 'ExpoModulesCore'
-
-  # Swift/Objective-C compatibility
   s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',
   }
-
+  
+  s.dependency 'ExpoModulesCore'
+  s.dependency "ChannelIOSDK", '~> 12'
+  
   s.source_files = "**/*.{h,m,mm,swift,hpp,cpp}"
 end

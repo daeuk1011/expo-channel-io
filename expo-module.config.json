@@ -5,6 +5,9 @@
     "web"
   ],
   "apple": {
+    "appDelegateSubscribers": [
+      "ExpoChannelIoDelegate"
+    ],
     "modules": [
       "ExpoChannelIoModule"
     ]

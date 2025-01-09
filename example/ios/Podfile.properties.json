@@ -1,5 +1,8 @@
 {
   "expo.jsEngine": "hermes",
   "EX_DEV_CLIENT_NETWORK_INSPECTOR": "true",
-  "newArchEnabled": "true"
+  "newArchEnabled": "true",
+  "apple.extraPods": "[{\"name\":\"ChannelIOSDK\",\"podspec\":\"https://mobile-static.channel.io/ios/latest/xcframework.podspec\"}]",
+  "apple.ccacheEnabled": "false",
+  "apple.privacyManifestAggregationEnabled": "true"
 }
