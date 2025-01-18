@@ -1,5 +1,7 @@
 export type Language = "en" | "ko" | "ja" | "device";
 
+export type Appearance = "light" | "dark" | "system";
+
 export type ChannelButtonIcon =
   | "channel"
   | "chatBubbleFilled"
@@ -42,16 +44,16 @@ export interface BubbleOption {
   yMargin: number;
 }
 
-export interface Appearance {
-  theme: "light" | "dark" | "system";
-}
-
 export interface Profile {
   name?: string;
   email?: string;
   mobileNumber?: string;
   avatarUrl?: string;
-  [key: string]: any;
+  [key: string]: string | number | boolean | null | undefined;
+}
+
+export interface EventProperty {
+  [key: string]: string | number | boolean | null | undefined;
 }
 
 export interface BootConfig {

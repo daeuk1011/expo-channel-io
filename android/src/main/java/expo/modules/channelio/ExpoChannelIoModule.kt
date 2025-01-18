@@ -10,6 +10,7 @@ import com.zoyi.channel.plugin.android.open.option.ChannelButtonOption
 import com.zoyi.channel.plugin.android.open.option.Language
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import io.channel.plugin.android.open.model.Appearance;
 
 class ExpoChannelIoModule : Module() {
   override fun definition() = ModuleDefinition {
@@ -27,11 +28,14 @@ class ExpoChannelIoModule : Module() {
         val channelButtonOption = settings["channelButtonOption"] as? Map<String, Any?>
         val buttonOption = toChannelButtonOption(channelButtonOption)
 
+        val appearance = settings["appearance"] as? String ?: "system"
+
         val bootConfig = BootConfig.create(pluginKey)
           .setMemberId(memberId)
           .setMemberHash(memberHash)
           .setProfile(profile)
           .setChannelButtonOption(buttonOption)
+          .setAppearance(Appearance.valueOf(appearance.uppercase()))
 
         ChannelIO.boot(bootConfig) { status, _ ->
           handleBootStatus(status)
@@ -39,6 +43,14 @@ class ExpoChannelIoModule : Module() {
       } catch (e: Exception) {
         Log.e("ExpoChannelIo", "Boot failed", e)
       }
+    }
+
+    Function("sleep") {
+      ChannelIO.sleep()
+    }
+
+    Function("shutdown") {
+      ChannelIO.shutdown()
     }
 
     Function("showChannelButton") {
@@ -56,6 +68,18 @@ class ExpoChannelIoModule : Module() {
 
     Function("hideMessenger") {
       ChannelIO.hideMessenger()
+    }
+
+    Function("isBooted") {
+      return@Function ChannelIO.isBooted()
+    }
+
+    Function("setDebugMode") { isDebugMode: Boolean ->
+      ChannelIO.setDebugMode(isDebugMode)
+    }
+
+    Function("setAppearance") { appearance: String ->
+      ChannelIO.setAppearance(Appearance.valueOf(appearance.uppercase()))
     }
   }
 

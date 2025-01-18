@@ -6,10 +6,6 @@ public struct BubbleOption {
     let yMargin: Int
 }
 
-public struct Appearance {
-    let theme: String
-}
-
 public class ExpoChannelIoModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoChannelIo")
@@ -30,11 +26,15 @@ public class ExpoChannelIoModule: Module {
         let buttonOptionData = settings["channelButtonOption"] as? [String: Any]
         let buttonOption = self.toChannelButtonOption(from: buttonOptionData)
 
+        let appearanceData = settings["appearance"] as? String ?? "system"
+        let appearance = self.mapAppearance(from: appearanceData)
+
         let bootConfig = BootConfig(pluginKey: pluginKey)
           .set(memberId: memberId)
           .set(memberHash: memberHash)
           .set(profile: profile)
           .set(channelButtonOption: buttonOption)
+          .set(appearance: appearance)
 
         ChannelIO.boot(with: bootConfig) { status, _ in
           self.handleBootStatus(status)
@@ -44,24 +44,42 @@ public class ExpoChannelIoModule: Module {
       }
     }
 
+    Function("sleep") {
+      ChannelIO.sleep()
+    }
+
+    Function("shutdown") {
+      ChannelIO.shutdown()
+    }
+
     Function("showChannelButton") {
       ChannelIO.showChannelButton()
-      print("Channel button shown")
     }
 
     Function("hideChannelButton") {
       ChannelIO.hideChannelButton()
-      print("Channel button hidden")
     }
 
     Function("showMessenger") {
       ChannelIO.showMessenger()
-      print("Messenger shown")
     }
 
     Function("hideMessenger") {
       ChannelIO.hideMessenger()
-      print("Messenger hidden")
+    }
+
+    Function("isBooted") {
+      return ChannelIO.isBooted
+    }
+
+    Function("setDebugMode") { (isDebugMode: Bool) in
+      ChannelIO.setDebugMode(with: isDebugMode)
+    }
+
+    Function("setAppearance") { (appearanceData: String) in
+      let appearance = self.mapAppearance(from: appearanceData)
+
+      ChannelIO.setAppearance(appearance)
     }
   }
 
@@ -103,7 +121,20 @@ public class ExpoChannelIoModule: Module {
     case "right":
       return .right
     default:
-      return .right // 기본값
+      return .right
+    }
+  }
+
+  private func mapAppearance(from string: String) -> Appearance {
+    switch string.lowercased() {
+      case "light":
+        return .light
+      case "dark":
+        return .dark
+      case "system":
+        return .system
+      default:
+        return .system
     }
   }
 

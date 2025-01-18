@@ -14,14 +14,64 @@ interface IChannelIO {
 }
 
 interface BootOption {
+  appearance?: string;
+  customLauncherSelector?: string;
+  hideChannelButtonOnBoot?: boolean;
+  hidePopup?: boolean;
+  language?: string;
+  memberHash?: string;
+  memberId?: string;
   pluginKey: string;
   profile?: Profile;
-  appearance?: string;
+  trackDefaultEvent?: boolean;
+  trackUtmSource?: boolean;
+  unsubscribe?: boolean;
+  unsubscribeEmail?: boolean;
+  unsubscribeTexting?: boolean;
+  zIndex?: number;
+}
+
+interface Callback {
+  (error: Error | null, user: CallbackUser | null): void;
+}
+
+interface CallbackUser {
+  alert: number;
+  avatarUrl: string;
+  id: string;
+  language: string;
+  memberId: string;
+  name?: string;
+  profile?: Profile | null;
+  tags?: string[] | null;
+  unsubscribeEmail: boolean;
+  unsubscribeTexting: boolean;
+}
+
+interface UpdateUserInfo {
+  language?: string;
+  profile?: Profile | null;
+  profileOnce?: Profile;
+  tags?: string[] | null;
+  unsubscribeEmail?: boolean;
+  unsubscribeTexting?: boolean;
 }
 
 interface Profile {
   [key: string]: string | number | boolean | null | undefined;
 }
+
+interface FollowUpProfile {
+  name?: string | null;
+  mobileNumber?: string | null;
+  email?: string | null;
+}
+
+interface EventProperty {
+  [key: string]: string | number | boolean | null | undefined;
+}
+
+type Appearance = "light" | "dark" | "system" | null;
 
 class ExpoChannelIoModule extends NativeModule {
   loadScript() {
@@ -61,8 +111,72 @@ class ExpoChannelIoModule extends NativeModule {
     })();
   }
 
-  boot(option: BootOption) {
-    window.ChannelIO?.("boot", option);
+  boot(option: BootOption, callback?: Callback) {
+    window.ChannelIO?.("boot", option, callback);
+  }
+
+  showMessenger() {
+    window.ChannelIO?.("showMessenger");
+  }
+
+  hideMessenger() {
+    window.ChannelIO?.("hideMessenger");
+  }
+
+  openChat(chatId?: string | number, message?: string) {
+    window.ChannelIO?.("openChat", chatId, message);
+  }
+
+  track(eventName: string, eventProperty?: EventProperty) {
+    window.ChannelIO?.("track", eventName, eventProperty);
+  }
+
+  onShowMessenger(callback: () => void) {
+    window.ChannelIO?.("onShowMessenger", callback);
+  }
+
+  onHideMessenger(callback: () => void) {
+    window.ChannelIO?.("onHideMessenger", callback);
+  }
+
+  onBadgeChanged(callback: (unread: number, alert: number) => void) {
+    window.ChannelIO?.("onBadgeChanged", callback);
+  }
+
+  onChatCreated(callback: () => void) {
+    window.ChannelIO?.("onChatCreated", callback);
+  }
+
+  onFollowUpChanged(callback: (profile: FollowUpProfile) => void) {
+    window.ChannelIO?.("onFollowUpChanged", callback);
+  }
+
+  onUrlClicked(callback: (url: string) => void) {
+    window.ChannelIO?.("onUrlClicked", callback);
+  }
+
+  clearCallbacks() {
+    window.ChannelIO?.("clearCallbacks");
+  }
+
+  updateUser(userInfo: UpdateUserInfo, callback?: Callback) {
+    window.ChannelIO?.("updateUser", userInfo, callback);
+  }
+
+  addTags(tags: string[], callback?: Callback) {
+    window.ChannelIO?.("addTags", tags, callback);
+  }
+
+  removeTags(tags: string[], callback?: Callback) {
+    window.ChannelIO?.("removeTags", tags, callback);
+  }
+
+  setPage(page: string) {
+    window.ChannelIO?.("setPage", page);
+  }
+
+  resetPage() {
+    window.ChannelIO?.("resetPage");
   }
 
   showChannelButton() {
@@ -73,12 +187,8 @@ class ExpoChannelIoModule extends NativeModule {
     window.ChannelIO?.("hideChannelButton");
   }
 
-  showMessenger() {
-    window.ChannelIO?.("showMessenger");
-  }
-
-  hideMessenger() {
-    window.ChannelIO?.("hideMessenger");
+  setAppearance(appearance: Appearance) {
+    window.ChannelIO?.("setAppearance", appearance);
   }
 }
 
