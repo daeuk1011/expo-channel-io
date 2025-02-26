@@ -1,15 +1,20 @@
 import ExpoChannelIo from "expo-channel-io";
 import { useEffect } from "react";
-import { Button, Platform, SafeAreaView, ScrollView, Text, View } from "react-native";
+import {
+  Button,
+  Platform,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
 
-if (Platform.OS === 'web')
-ExpoChannelIo.loadScript()
+if (Platform.OS === "web") ExpoChannelIo.loadScript();
 
 export default function App() {
   useEffect(() => {
     if (!ExpoChannelIo.isBooted()) {
-
-      console.log("채널톡 부트 🚀 🚀 🚀")
+      console.log("채널톡 부트 🚀 🚀 🚀");
 
       ExpoChannelIo.boot({
         pluginKey: "6394e760-45e7-4f24-985c-4c26c54a9207",
@@ -43,19 +48,18 @@ export default function App() {
           penalty: 0,
           adminMemo: "",
         },
-        appearance: 'system',
+        appearance: "system",
         channelButtonOption: {
-          icon: 'channel',
-          position: 'right',
+          icon: "channel",
+          position: "right",
           xMargin: 20,
           yMargin: 100,
         },
-      })
+      });
 
-      ExpoChannelIo.showChannelButton()
+      ExpoChannelIo.showChannelButton();
     }
   }, []);
-
 
   return (
     <SafeAreaView style={styles.container}>
@@ -64,7 +68,10 @@ export default function App() {
 
         <Group name="Hello">
           <Text>테스트</Text>
-          <Button title="Show Messenger" onPress={() => ExpoChannelIo.showMessenger()} />
+          <Button
+            title="Show Messenger"
+            onPress={() => ExpoChannelIo.showMessenger()}
+          />
         </Group>
 
         <Group name="Hello">
