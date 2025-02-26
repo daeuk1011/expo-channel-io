@@ -80,12 +80,12 @@ class ExpoChannelIoModule extends NativeModule {
       if (w.ChannelIO) {
         return w.console.error("ChannelIO script included twice.");
       }
-      const ch = function () {
-        ch.c(arguments);
+      const ch: IChannelIO = function (...args) {
+        ch.c?.(...args);
       };
       ch.q = [];
       ch.c = function (args) {
-        ch.q.push(args);
+        ch.q?.push(args);
       };
       w.ChannelIO = ch;
       function l() {
@@ -111,8 +111,16 @@ class ExpoChannelIoModule extends NativeModule {
     })();
   }
 
-  boot(option: BootOption, callback?: Callback) {
+  async boot(option: BootOption, callback?: Callback) {
     window.ChannelIO?.("boot", option, callback);
+  }
+
+  sleep() {
+    window.ChannelIO?.("sleep");
+  }
+
+  shutdown() {
+    window.ChannelIO?.("shutdown");
   }
 
   showMessenger() {
