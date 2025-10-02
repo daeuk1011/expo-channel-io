@@ -23,25 +23,15 @@ if (useManagedAndroidSdkVersions) {
     }
   }
   project.android {
+    namespace "expo.modules.channelio"
     compileSdkVersion safeExtGet("compileSdkVersion", 34)
     defaultConfig {
-      minSdkVersion safeExtGet("minSdkVersion", 21)
+      minSdkVersion safeExtGet("minSdkVersion", 26)
       targetSdkVersion safeExtGet("targetSdkVersion", 34)
     }
   }
 }
 
-android {
-  namespace "expo.modules.channelio"
-  defaultConfig {
-    versionCode 1
-    versionName "0.1.0"
-  }
-  lintOptions {
-    abortOnError false
-  }
-}
-
 dependencies {
-  implementation 'io.channel:plugin-android:12.4.0'
+  implementation 'io.channel:plugin-android:12.15.0'
 }

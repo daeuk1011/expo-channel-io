@@ -1,27 +1,6 @@
-export type Language = "en" | "ko" | "ja" | "device";
-
+// 기본 타입들
 export type Appearance = "light" | "dark" | "system";
-
-export type ChannelButtonIcon =
-  | "channel"
-  | "chatBubbleFilled"
-  | "chatProgressFilled"
-  | "chatQuestionFilled"
-  | "chatLightningFilled"
-  | "chatBubbleAltFilled"
-  | "smsFilled"
-  | "commentFilled"
-  | "sendForwardFilled"
-  | "helpFilled"
-  | "chatProgress"
-  | "chatQuestion"
-  | "chatBubbleAlt"
-  | "sms"
-  | "comment"
-  | "sendForward"
-  | "communication"
-  | "headset";
-
+export type Language = "ko" | "en" | "ja" | "device";
 export type BootStatus =
   | "success"
   | "notInitialized"
@@ -32,41 +11,123 @@ export type BootStatus =
   | "accessDenied"
   | "unknown";
 
-export interface ChannelButtonOption {
-  icon: ChannelButtonIcon;
-  position: "left" | "right";
-  xMargin: number;
-  yMargin: number;
-}
+export type ButtonPosition = "left" | "right";
+export type ButtonIcon =
+  | "channel"
+  | "chatbubblefilled"
+  | "chatprogressfilled"
+  | "chatquestionfilled"
+  | "chatlightningfilled"
+  | "chatbubblealtfilled"
+  | "smsfilled"
+  | "commentfilled"
+  | "sendforwardfilled"
+  | "helpfilled"
+  | "chatprogress"
+  | "chatquestion"
+  | "chatbubblealt"
+  | "sms"
+  | "comment"
+  | "sendforward"
+  | "communication"
+  | "headset";
 
-export interface BubbleOption {
-  position: "top" | "bottom";
-  yMargin: number;
-}
-
+// Profile 타입
 export interface Profile {
   name?: string;
   email?: string;
   mobileNumber?: string;
+  phoneNumber?: string;
   avatarUrl?: string;
   [key: string]: string | number | boolean | null | undefined;
 }
 
+// 채널 버튼 옵션
+export interface ChannelButtonOption {
+  icon?: ButtonIcon;
+  position?: ButtonPosition;
+  xMargin?: number;
+  yMargin?: number;
+}
+
+// Boot 설정
+export interface BootConfig {
+  pluginKey: string;
+  memberId?: string;
+  memberHash?: string;
+  profile?: Profile;
+  language?: Language;
+  appearance?: Appearance;
+  channelButtonOption?: ChannelButtonOption;
+  hideChannelButtonOnBoot?: boolean;
+  hidePopup?: boolean;
+  trackDefaultEvent?: boolean;
+  trackUtmSource?: boolean;
+  unsubscribe?: boolean;
+  unsubscribeEmail?: boolean;
+  unsubscribeTexting?: boolean;
+  zIndex?: number;
+}
+
+// User 정보
+export interface User {
+  memberId: string;
+  name?: string;
+  avatarUrl?: string;
+  unread: number;
+  profile?: Profile;
+  tags?: string[];
+  language?: string;
+  unsubscribeEmail?: boolean;
+  unsubscribeTexting?: boolean;
+}
+
+// Boot 결과
+export interface BootResult {
+  status: BootStatus;
+  user: User | null;
+}
+
+// 태그 작업 결과
+export interface TagOperationResult {
+  user: User | null;
+}
+
+// 이벤트 프로퍼티
 export interface EventProperty {
   [key: string]: string | number | boolean | null | undefined;
 }
 
-export interface BootConfig {
-  pluginKey: string; // 채널의 플러그인 키
-  memberId?: string; // 멤버 유저를 구분하는 id
-  memberHash?: string; // memberId의 해시화 된 값
-  profile?: Profile; // 유저의 프로필 값
-  language?: Language; // 유저가 사용할 언어
-  hidePopup?: boolean; // 기본 마케팅 메시지 및 팝업 숨김 여부
-  unsubscribeEmail?: boolean; // 이메일 마케팅 메시지 수신 여부
-  unsubscribeTexting?: boolean; // 문자 마케팅 메시지 수신 여부
-  trackDefaultEvent?: boolean; // 기본 이벤트 전송 여부
-  channelButtonOption?: ChannelButtonOption; // 채널 버튼 설정
-  bubbleOption?: BubbleOption; // 마케팅 버블 설정
-  appearance?: Appearance; // SDK 화면 테마 설정
+// 푸시 알림 결과 (향후 사용)
+export interface PushNotificationResult {
+  success: boolean;
 }
+
+// 이벤트 페이로드
+export interface BadgeChangedEvent {
+  unread: number;
+  alert: number;
+}
+
+export interface ChatCreatedEvent {
+  chatId: string;
+}
+
+export interface UrlClickedEvent {
+  url: string;
+}
+
+export interface FollowUpProfile {
+  name?: string | null;
+  mobileNumber?: string | null;
+  email?: string | null;
+}
+
+// 이벤트 리스너 타입
+export type BadgeChangedListener = (event: BadgeChangedEvent) => void;
+export type ChatCreatedListener = (event: ChatCreatedEvent) => void;
+export type FollowUpChangedListener = (profile: FollowUpProfile) => void;
+export type UrlClickedListener = (event: UrlClickedEvent) => void;
+export type PopupDataReceivedListener = () => void;
+export type ShowMessengerListener = () => void;
+export type HideMessengerListener = () => void;

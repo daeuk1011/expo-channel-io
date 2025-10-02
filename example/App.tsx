@@ -1,24 +1,19 @@
-import ExpoChannelIo from "expo-channel-io";
 import { useEffect } from "react";
-import {
-  Button,
-  Platform,
-  SafeAreaView,
-  ScrollView,
-  Text,
-  View,
-} from "react-native";
+import ExpoChannelIo from "expo-channel-io";
+import { Button, Platform, ScrollView, Text, View } from "react-native";
 
 if (Platform.OS === "web") ExpoChannelIo.loadScript();
 
 export default function App() {
+  const pluginKey = process.env.EXPO_CHANNEL_TALK_PLUGIN_KEY;
+
   useEffect(() => {
     if (!ExpoChannelIo.isBooted()) {
       console.log("채널톡 부트 🚀 🚀 🚀");
 
       ExpoChannelIo.boot({
-        pluginKey: "6394e760-45e7-4f24-985c-4c26c54a9207",
-        memberId: "test1324",
+        pluginKey,
+        memberId: "test13245",
         profile: {
           name: "홍길동",
           nickname: "개발 테스트",
@@ -48,13 +43,16 @@ export default function App() {
           penalty: 0,
           adminMemo: "",
         },
-        appearance: "system",
+        appearance: "light",
         channelButtonOption: {
           icon: "channel",
           position: "right",
           xMargin: 20,
           yMargin: 100,
         },
+        language: "en",
+      }).then((result) => {
+        console.log(result);
       });
 
       ExpoChannelIo.showChannelButton();
@@ -62,48 +60,37 @@ export default function App() {
   }, []);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <ScrollView style={styles.container}>
         <Text style={styles.header}>Module API Example</Text>
 
         <Group name="Hello">
-          <Text>테스트</Text>
-          <Button
-            title="Show Messenger"
-            onPress={() => ExpoChannelIo.showMessenger()}
-          />
+          <Text>메신저</Text>
+          <Button title="Show Messenger" onPress={() => ExpoChannelIo.showMessenger()} />
+          <Button title="Show Messenger" onPress={() => ExpoChannelIo.hideMessenger()} />
+        </Group>
+
+        <Group name="Hello">
+          <Text>채</Text>
+          <Button title="Show Button" onPress={() => ExpoChannelIo.showChannelButton()} />
+          <Button title="Hide Button" onPress={() => ExpoChannelIo.hideChannelButton()} />
         </Group>
 
         <Group name="Hello">
           <Text>테스트</Text>
-          <Button
-            title="Show Button"
-            onPress={() => ExpoChannelIo.showChannelButton()}
-          />
-          <Button
-            title="Hide Button"
-            onPress={() => ExpoChannelIo.hideChannelButton()}
-          />
+          <Button title="Open Chat" onPress={() => ExpoChannelIo.openChat(null, "Hello")} />
+          <Button title="Open Workflow" onPress={() => ExpoChannelIo.openWorkflow("98485")} />
         </Group>
 
         <Group name="Hello">
           <Text>테스트</Text>
-          <Button
-            title="다크 테마"
-            onPress={() => ExpoChannelIo.setAppearance("dark")}
-          />
-          <Button
-            title="라이트 테마"
-            onPress={() => ExpoChannelIo.setAppearance("light")}
-          />
+          <Button title="다크 테마" onPress={() => ExpoChannelIo.setAppearance("dark")} />
+          <Button title="라이트 테마" onPress={() => ExpoChannelIo.setAppearance("light")} />
 
-          <Button
-            title="시스템 테마"
-            onPress={() => ExpoChannelIo.setAppearance("system")}
-          />
+          <Button title="시스템 테마" onPress={() => ExpoChannelIo.setAppearance("system")} />
         </Group>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 

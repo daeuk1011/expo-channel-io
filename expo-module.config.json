@@ -1,20 +1,10 @@
 {
-  "platforms": [
-    "apple",
-    "android",
-    "web"
-  ],
+  "platforms": ["apple", "android", "web"],
   "apple": {
-    "appDelegateSubscribers": [
-      "ExpoChannelIoDelegate"
-    ],
-    "modules": [
-      "ExpoChannelIoModule"
-    ]
+    "appDelegateSubscribers": ["ExpoChannelIoDelegate"],
+    "modules": ["ExpoChannelIoModule"]
   },
   "android": {
-    "modules": [
-      "expo.modules.channelio.ExpoChannelIoModule"
-    ]
+    "modules": ["expo.modules.channelio.ExpoChannelIoModule"]
   }
 }

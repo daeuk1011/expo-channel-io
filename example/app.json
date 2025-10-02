@@ -15,7 +15,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "expo.modules.channelio.example",
-      "appleTeamId": "7BHZFS7R5N"
+      "appleTeamId": "JZ4D5233F8"
     },
     "android": {
       "adaptiveIcon": {
@@ -26,24 +26,6 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    },
-    "plugins": [
-      [
-        "expo-build-properties",
-        {
-          "android": {
-            "usesCleartextTraffic": true
-          },
-          "ios": {
-            "extraPods": [
-              {
-                "name": "ChannelIOSDK",
-                "podspec": "https://mobile-static.channel.io/ios/latest/xcframework.podspec"
-              }
-            ]
-          }
-        }
-      ]
-    ]
+    }
   }
 }
