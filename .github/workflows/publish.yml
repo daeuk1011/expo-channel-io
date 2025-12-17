@@ -26,7 +26,7 @@ jobs:
           echo "Publishing version: $VERSION"
 
       - name: Update package.json version
-        run: npm version ${{ steps.version.outputs.VERSION }} --no-git-tag-version
+        run: npm version ${{ steps.version.outputs.VERSION }} --no-git-tag-version --allow-same-version
 
       - name: Install dependencies
         run: npm install
