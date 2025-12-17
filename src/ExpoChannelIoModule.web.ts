@@ -6,7 +6,9 @@ import {
   EventProperty,
   Profile,
   User,
+  UserData,
   TagOperationResult,
+  PushNotificationResult,
 } from "./ExpoChannelIo.types";
 
 declare global {
@@ -160,23 +162,35 @@ class ExpoChannelIoModule extends NativeModule {
     });
   }
 
-  updateUser(profile: Profile): Promise<User> {
+  updateUser(userData: UserData): Promise<User | null> {
     return new Promise((resolve, reject) => {
       try {
-        const userInfo: WebUpdateUserInfo = {
-          profile,
-        };
+        const userInfo: WebUpdateUserInfo = {};
+
+        if (userData.language) {
+          userInfo.language = userData.language;
+        }
+        if (userData.profile) {
+          userInfo.profile = userData.profile;
+        }
+        if (userData.profileOnce) {
+          userInfo.profileOnce = userData.profileOnce;
+        }
+        if (userData.tags) {
+          userInfo.tags = userData.tags;
+        }
+        if (userData.unsubscribeEmail !== undefined) {
+          userInfo.unsubscribeEmail = userData.unsubscribeEmail;
+        }
+        if (userData.unsubscribeTexting !== undefined) {
+          userInfo.unsubscribeTexting = userData.unsubscribeTexting;
+        }
 
         window.ChannelIO?.("updateUser", userInfo, (error: Error | null, user: WebCallbackUser | null) => {
           if (error) {
             reject(error);
           } else {
-            const convertedUser = this.convertWebUserToUser(user);
-            if (convertedUser) {
-              resolve(convertedUser);
-            } else {
-              reject(new Error("User update failed"));
-            }
+            resolve(this.convertWebUserToUser(user));
           }
         });
       } catch (error) {
@@ -248,8 +262,7 @@ class ExpoChannelIoModule extends NativeModule {
   }
 
   hidePopup(): void {
-    // Web에서는 hideMessenger로 처리
-    this.hideMessenger();
+    window.ChannelIO?.("hidePopup");
   }
 
   openChat(chatId?: string | null, message?: string | null): void {
@@ -289,6 +302,11 @@ class ExpoChannelIoModule extends NativeModule {
     return !!window.ChannelIO && !!window.ChannelIOInitialized;
   }
 
+  getCurrentUser(): User | null {
+    // Web SDK는 직접 user 객체를 제공하지 않음
+    return null;
+  }
+
   // 설정
   setDebugMode(enabled: boolean): void {
     // Web SDK는 debug mode를 지원하지 않으므로 console로 로깅
@@ -299,6 +317,31 @@ class ExpoChannelIoModule extends NativeModule {
 
   setAppearance(appearance: Appearance): void {
     window.ChannelIO?.("setAppearance", appearance);
+  }
+
+  // 푸시 알림 관련 (Web에서는 지원되지 않음)
+  initPushToken(_deviceToken: string): void {
+    console.warn("[ExpoChannelIo] initPushToken is not supported on web");
+  }
+
+  isChannelPushNotification(_userInfo: Record<string, any>): Promise<boolean> {
+    return Promise.resolve(false);
+  }
+
+  storePushNotification(_userInfo: Record<string, any>): void {
+    console.warn("[ExpoChannelIo] storePushNotification is not supported on web");
+  }
+
+  hasStoredPushNotification(): Promise<boolean> {
+    return Promise.resolve(false);
+  }
+
+  openStoredPushNotification(): void {
+    console.warn("[ExpoChannelIo] openStoredPushNotification is not supported on web");
+  }
+
+  receivePushNotification(_userInfo: Record<string, any>): Promise<{ success: boolean }> {
+    return Promise.resolve({ success: false });
   }
 
   // Web 전용 이벤트 리스너 메서드들 (호환성 유지)

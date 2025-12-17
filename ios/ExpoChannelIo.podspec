@@ -19,7 +19,7 @@ Pod::Spec.new do |s|
   s.static_framework = true
 
   s.dependency "React"
-  s.dependency "ChannelIOSDK", '12.14.1'
+  s.dependency "ChannelIOSDK", '13.0.3'
   s.dependency 'ExpoModulesCore'
 
   s.pod_target_xcconfig = {

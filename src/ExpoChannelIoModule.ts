@@ -7,6 +7,7 @@ import {
   EventProperty,
   Profile,
   User,
+  UserData,
   PushNotificationResult,
   TagOperationResult,
 } from "./ExpoChannelIo.types";
@@ -14,10 +15,9 @@ import {
 declare class ExpoChannelIoModule extends NativeModule {
   // 비동기 메서드들 (Promise 반환)
   boot(config: BootConfig): Promise<BootResult>;
-  updateUser(profile: Profile): Promise<{ success: boolean }>;
+  updateUser(userData: UserData): Promise<User | null>;
   addTags(tags: string[]): Promise<TagOperationResult>;
   removeTags(tags: string[]): Promise<TagOperationResult>;
-  receivePushNotification(userInfo: Record<string, any>): Promise<PushNotificationResult>;
 
   // 동기 메서드들
   sleep(): void;
@@ -35,22 +35,20 @@ declare class ExpoChannelIoModule extends NativeModule {
 
   // 푸시 알림 관련
   initPushToken(deviceToken: string): void;
-  isChannelPushNotification(userInfo: Record<string, any>): boolean;
+  isChannelPushNotification(userInfo: Record<string, any>): Promise<boolean>;
   storePushNotification(userInfo: Record<string, any>): void;
-  hasStoredPushNotification(): boolean;
+  hasStoredPushNotification(): Promise<boolean>;
   openStoredPushNotification(): void;
+  receivePushNotification(userInfo: Record<string, any>): Promise<PushNotificationResult>;
 
   // 상태 조회
   isBooted(): boolean;
   getCurrentUser(): User | null;
-  getBadgeCount(): number;
-  getUnreadCount(): number;
 
   // 설정
   setDebugMode(enabled: boolean): void;
   setAppearance(appearance: Appearance): void;
   clearCallbacks(): void;
-  getSDKVersion(): string;
 }
 
 export default requireNativeModule<ExpoChannelIoModule>("ExpoChannelIo");

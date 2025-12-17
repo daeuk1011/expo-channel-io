@@ -36,6 +36,10 @@ public class ExpoChannelIoModule: Module {
                 config.memberId = memberId
             }
 
+            if let memberHash = bootConfig["memberHash"] as? String {
+                config.memberHash = memberHash
+            }
+
             if let profile = bootConfig["profile"] as? [String: Any] {
                 config.profile = self.buildInitProfile(from: profile)
             }
@@ -51,7 +55,31 @@ public class ExpoChannelIoModule: Module {
             if let channelButtonOption = bootConfig["channelButtonOption"] as? [String: Any] {
                 config.channelButtonOption = self.buildChannelButtonOption(from: channelButtonOption)
             }
-            
+
+            if let bubbleOption = bootConfig["bubbleOption"] as? [String: Any] {
+                config.bubbleOption = self.buildBubbleOption(from: bubbleOption)
+            }
+
+            if let hideChannelButtonOnBoot = bootConfig["hideChannelButtonOnBoot"] as? Bool {
+                config.hideChannelButtonOnBoot = hideChannelButtonOnBoot
+            }
+
+            if let hidePopup = bootConfig["hidePopup"] as? Bool {
+                config.hidePopup = hidePopup
+            }
+
+            if let trackDefaultEvent = bootConfig["trackDefaultEvent"] as? Bool {
+                config.trackDefaultEvent = trackDefaultEvent
+            }
+
+            if let unsubscribeEmail = bootConfig["unsubscribeEmail"] as? Bool {
+                config.unsubscribeEmail = unsubscribeEmail
+            }
+
+            if let unsubscribeTexting = bootConfig["unsubscribeTexting"] as? Bool {
+                config.unsubscribeTexting = unsubscribeTexting
+            }
+
             ChannelIO.boot(with: config) { status, user in
                 let result: [String: Any] = [
                     "status": self.convertBootStatus(status),
@@ -110,16 +138,50 @@ public class ExpoChannelIoModule: Module {
         }
         
         // 사용자 정보 업데이트 (비동기)
-        AsyncFunction("updateUser") { (userInfo: [String: Any], promise: Promise) in
-            let profileDict = self.buildProfile(from: userInfo)
+        AsyncFunction("updateUser") { (userData: [String: Any], promise: Promise) in
+            let builder = CHTUpdateUserParamBuilder()
 
-            let param = CHTUpdateUserParamBuilder().with(profile: profileDict).build()
-            
+            // language 처리
+            if let language = userData["language"] as? String {
+                builder.with(language: self.parseLanguage(language))
+            }
+
+            // tags 처리
+            if let tags = userData["tags"] as? [String] {
+                builder.with(tags: tags)
+            }
+
+            // profile 처리
+            if let profileData = userData["profile"] as? [String: Any] {
+                let profileDict = self.buildProfile(from: profileData)
+                builder.with(profile: profileDict)
+            }
+
+            // profileOnce 처리
+            if let profileOnceData = userData["profileOnce"] as? [String: Any] {
+                let profileOnceDict = self.buildProfile(from: profileOnceData)
+                builder.with(profileOnce: profileOnceDict)
+            }
+
+            // unsubscribeEmail 처리
+            if let unsubscribeEmail = userData["unsubscribeEmail"] as? Bool {
+                builder.with(unsubscribeEmail: unsubscribeEmail)
+            }
+
+            // unsubscribeTexting 처리
+            if let unsubscribeTexting = userData["unsubscribeTexting"] as? Bool {
+                builder.with(unsubscribeTexting: unsubscribeTexting)
+            }
+
+            let param = builder.build()
+
             ChannelIO.updateUser(param: param) { (error, user) in
-                if let user = user, error != nil {
-                    promise.resolve(user)
+                if let user = user, error == nil {
+                    promise.resolve(self.convertUser(user: user))
                 } else if let error = error {
                     promise.reject("UPDATE_USER_FAILED", error.localizedDescription)
+                } else {
+                    promise.reject("UPDATE_USER_FAILED", "Unknown error")
                 }
             }
         }
@@ -173,16 +235,64 @@ public class ExpoChannelIoModule: Module {
         Function("isBooted") { () -> Bool in
             return ChannelIO.isBooted
         }
-        
+
+        // 현재 사용자 정보 가져오기
+        Function("getCurrentUser") { () -> [String: Any]? in
+            guard let user = ChannelIO.user else { return nil }
+            return self.convertUser(user: user)
+        }
+
         // 디버그 모드 설정
         Function("setDebugMode") { (enabled: Bool) in
             ChannelIO.setDebugMode(with: enabled)
         }
-        
+
         // 테마 설정
         Function("setAppearance") { (appearance: String) in
             let appearanceEnum = self.parseAppearance(appearance)
             ChannelIO.setAppearance(appearanceEnum)
+        }
+
+        // 푸시 토큰 등록
+        Function("initPushToken") { (deviceToken: String) in
+            if let tokenData = self.hexStringToData(deviceToken) {
+                ChannelIO.initPushToken(deviceToken: tokenData)
+            }
+        }
+
+        // 채널톡 푸시 알림인지 확인
+        AsyncFunction("isChannelPushNotification") { (userInfo: [String: Any], promise: Promise) in
+            let isChannel = ChannelIO.isChannelPushNotification(userInfo)
+            promise.resolve(isChannel)
+        }
+
+        // 푸시 알림 저장
+        Function("storePushNotification") { (userInfo: [String: Any]) in
+            ChannelIO.storePushNotification(userInfo)
+        }
+
+        // 저장된 푸시 알림 확인
+        AsyncFunction("hasStoredPushNotification") { (promise: Promise) in
+            let hasStored = ChannelIO.hasStoredPushNotification()
+            promise.resolve(hasStored)
+        }
+
+        // 저장된 푸시 알림 열기
+        Function("openStoredPushNotification") {
+            ChannelIO.openStoredPushNotification()
+        }
+
+        // 푸시 알림 수신 처리
+        AsyncFunction("receivePushNotification") { (userInfo: [String: Any], promise: Promise) in
+            ChannelIO.receivePushNotification(userInfo) {
+                promise.resolve(["success": true])
+            }
+        }
+
+        // 콜백 정리
+        Function("clearCallbacks") {
+            ChannelIO.delegate = nil
+            ChannelIO.delegate = self
         }
     }
 }
@@ -290,12 +400,19 @@ extension ExpoChannelIoModule {
     
     private func convertUser(user: CHTUser) -> [String: Any] {
         var userDict: [String: Any] = [:]
-        
+
+        userDict["id"] = user.id
         userDict["memberId"] = user.memberId
         userDict["name"] = user.name
-        userDict["avatarUrl"] = user.avatarUrl        
+        userDict["avatarUrl"] = user.avatarUrl
         userDict["unread"] = user.unread
-        
+        userDict["alert"] = user.alert
+        userDict["profile"] = user.profile
+        userDict["tags"] = user.tags
+        userDict["language"] = user.language
+        userDict["unsubscribeEmail"] = user.unsubscribeEmail
+        userDict["unsubscribeTexting"] = user.unsubscribeTexting
+
         return userDict
     }
     

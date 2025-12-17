@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 
 group = 'expo.modules.channelio'
-version = '0.1.0'
+version = '0.3.0'
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 apply from: expoModulesCorePlugin
@@ -33,5 +33,5 @@ if (useManagedAndroidSdkVersions) {
 }
 
 dependencies {
-  implementation 'io.channel:plugin-android:12.15.0'
+  implementation 'io.channel:plugin-android:13.1.2'
 }

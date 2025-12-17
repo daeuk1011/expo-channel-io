@@ -50,6 +50,24 @@ export interface ChannelButtonOption {
   yMargin?: number;
 }
 
+// 버블 위치
+export type BubblePosition = "top" | "bottom";
+
+// 버블 옵션
+export interface BubbleOption {
+  position?: BubblePosition;
+  yMargin?: number;
+}
+
+// 팝업 데이터
+export interface PopupData {
+  chatId?: string;
+  avatarUrl?: string;
+  name?: string;
+  message?: string;
+  timestamp?: number;
+}
+
 // Boot 설정
 export interface BootConfig {
   pluginKey: string;
@@ -59,6 +77,7 @@ export interface BootConfig {
   language?: Language;
   appearance?: Appearance;
   channelButtonOption?: ChannelButtonOption;
+  bubbleOption?: BubbleOption;
   hideChannelButtonOnBoot?: boolean;
   hidePopup?: boolean;
   trackDefaultEvent?: boolean;
@@ -71,10 +90,12 @@ export interface BootConfig {
 
 // User 정보
 export interface User {
+  id?: string;
   memberId: string;
   name?: string;
   avatarUrl?: string;
   unread: number;
+  alert: number;
   profile?: Profile;
   tags?: string[];
   language?: string;
@@ -91,6 +112,16 @@ export interface BootResult {
 // 태그 작업 결과
 export interface TagOperationResult {
   user: User | null;
+}
+
+// 사용자 업데이트 데이터 (updateUser용)
+export interface UserData {
+  language?: Language;
+  tags?: string[];
+  profile?: Profile;
+  profileOnce?: Profile;
+  unsubscribeEmail?: boolean;
+  unsubscribeTexting?: boolean;
 }
 
 // 이벤트 프로퍼티
@@ -128,6 +159,7 @@ export type BadgeChangedListener = (event: BadgeChangedEvent) => void;
 export type ChatCreatedListener = (event: ChatCreatedEvent) => void;
 export type FollowUpChangedListener = (profile: FollowUpProfile) => void;
 export type UrlClickedListener = (event: UrlClickedEvent) => void;
-export type PopupDataReceivedListener = () => void;
+export type PopupDataReceivedListener = (popupData: PopupData) => void;
 export type ShowMessengerListener = () => void;
 export type HideMessengerListener = () => void;
+export type PushNotificationClickedListener = (chatId: string) => boolean;

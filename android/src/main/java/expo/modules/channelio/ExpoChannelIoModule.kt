@@ -5,8 +5,10 @@ import com.zoyi.channel.plugin.android.ChannelIO
 import com.zoyi.channel.plugin.android.open.config.BootConfig
 import com.zoyi.channel.plugin.android.open.enumerate.BootStatus
 import com.zoyi.channel.plugin.android.open.enumerate.ChannelButtonPosition
+import com.zoyi.channel.plugin.android.open.enumerate.BubblePosition
 import com.zoyi.channel.plugin.android.open.model.*
 import com.zoyi.channel.plugin.android.open.option.ChannelButtonOption
+import com.zoyi.channel.plugin.android.open.option.BubbleOption
 import com.zoyi.channel.plugin.android.open.option.Language
 import com.zoyi.channel.plugin.android.open.listener.ChannelPluginListener
 import expo.modules.kotlin.modules.Module
@@ -52,11 +54,13 @@ class ExpoChannelIoModule : Module() {
         val memberHash = settings["memberHash"] as? String
         val profileData = settings["profile"] as? Map<String, Any?>
         val profile = createProfileFromMap(profileData)
-        
+
         val language = parseLanguage(settings["language"] as? String)
         val appearance = parseAppearance(settings["appearance"] as? String)
         val channelButtonOption = settings["channelButtonOption"] as? Map<String, Any?>
         val buttonOption = toChannelButtonOption(channelButtonOption)
+        val bubbleOptionData = settings["bubbleOption"] as? Map<String, Any?>
+        val bubbleOption = toBubbleOption(bubbleOptionData)
 
         val bootConfig = BootConfig.create(pluginKey)
           .setMemberId(memberId)
@@ -65,6 +69,28 @@ class ExpoChannelIoModule : Module() {
           .setChannelButtonOption(buttonOption)
           .setLanguage(language)
           .setAppearance(appearance)
+
+        bubbleOption?.let { bootConfig.setBubbleOption(it) }
+
+        (settings["hideChannelButtonOnBoot"] as? Boolean)?.let {
+          bootConfig.setHideChannelButtonOnBoot(it)
+        }
+
+        (settings["hidePopup"] as? Boolean)?.let {
+          bootConfig.setHidePopup(it)
+        }
+
+        (settings["trackDefaultEvent"] as? Boolean)?.let {
+          bootConfig.setTrackDefaultEvent(it)
+        }
+
+        (settings["unsubscribeEmail"] as? Boolean)?.let {
+          bootConfig.setUnsubscribeEmail(it)
+        }
+
+        (settings["unsubscribeTexting"] as? Boolean)?.let {
+          bootConfig.setUnsubscribeTexting(it)
+        }
 
         ChannelIO.boot(bootConfig) { bootStatus, user ->
           val result = mapOf(
@@ -146,39 +172,39 @@ class ExpoChannelIoModule : Module() {
       }
     }
 
-    // AsyncFunction("addTags") { tags: List<String>, promise: Promise ->
-    //   try {
-    //     ChannelIO.addTags(*tags.toTypedArray(), callback = { e: Exception?, user: User? ->
-    //       if (e != null) {
-    //         promise.reject("ADD_TAGS_FAILED", e.message ?: "Unknown error", e)
-    //       } else {
-    //         val result = mapOf(
-    //           "user" to if (user != null) convertUser(user) else null
-    //         )
-    //         promise.resolve(result)
-    //       }
-    //     })
-    //   } catch (e: Exception) {
-    //     promise.reject("ADD_TAGS_FAILED", e.message, e)
-    //   }
-    // }
+    AsyncFunction("addTags") { tags: List<String>, promise: Promise ->
+      try {
+        ChannelIO.addTags(tags) { e: Exception?, user: User? ->
+          if (e != null) {
+            promise.reject("ADD_TAGS_FAILED", e.message ?: "Unknown error", e)
+          } else {
+            val result = mapOf(
+              "user" to if (user != null) convertUser(user) else null
+            )
+            promise.resolve(result)
+          }
+        }
+      } catch (e: Exception) {
+        promise.reject("ADD_TAGS_FAILED", e.message, e)
+      }
+    }
 
-    // AsyncFunction("removeTags") { tags: List<String>, promise: Promise ->
-    //   try {
-    //     ChannelIO.removeTags(*tags.toTypedArray(), callback = { e: Exception?, user: User? ->
-    //       if (e != null) {
-    //         promise.reject("REMOVE_TAGS_FAILED", e.message ?: "Unknown error", e)
-    //       } else {
-    //         val result = mapOf(
-    //           "user" to if (user != null) convertUser(user) else null
-    //         )
-    //         promise.resolve(result)
-    //       }
-    //     })
-    //   } catch (e: Exception) {
-    //     promise.reject("REMOVE_TAGS_FAILED", e.message, e)
-    //   }
-    // }
+    AsyncFunction("removeTags") { tags: List<String>, promise: Promise ->
+      try {
+        ChannelIO.removeTags(tags) { e: Exception?, user: User? ->
+          if (e != null) {
+            promise.reject("REMOVE_TAGS_FAILED", e.message ?: "Unknown error", e)
+          } else {
+            val result = mapOf(
+              "user" to if (user != null) convertUser(user) else null
+            )
+            promise.resolve(result)
+          }
+        }
+      } catch (e: Exception) {
+        promise.reject("REMOVE_TAGS_FAILED", e.message, e)
+      }
+    }
 
     Function("track") { eventName: String, eventProperties: Map<String, Any?>? ->
       try {
@@ -210,6 +236,54 @@ class ExpoChannelIoModule : Module() {
 
     Function("setAppearance") { appearance: String ->
       ChannelIO.setAppearance(parseAppearance(appearance))
+    }
+
+    // 현재 사용자 정보 가져오기
+    Function("getCurrentUser") {
+      val user = ChannelIO.user
+      return@Function if (user != null) convertUser(user) else null
+    }
+
+    // 푸시 토큰 등록
+    Function("initPushToken") { token: String ->
+      ChannelIO.initPushToken(token)
+    }
+
+    // 채널톡 푸시 알림인지 확인
+    AsyncFunction("isChannelPushNotification") { userInfo: Map<String, Any?>, promise: Promise ->
+      val isChannel = ChannelIO.isChannelPushNotification(userInfo)
+      promise.resolve(isChannel)
+    }
+
+    // 푸시 알림 저장
+    Function("storePushNotification") { userInfo: Map<String, Any?> ->
+      ChannelIO.storePushNotification(userInfo)
+    }
+
+    // 저장된 푸시 알림 확인
+    AsyncFunction("hasStoredPushNotification") { promise: Promise ->
+      val hasStored = ChannelIO.hasStoredPushNotification()
+      promise.resolve(hasStored)
+    }
+
+    // 저장된 푸시 알림 열기
+    Function("openStoredPushNotification") {
+      val context = appContext.currentActivity
+      if (context != null) {
+        ChannelIO.openStoredPushNotification(context)
+      }
+    }
+
+    // 푸시 알림 수신 처리
+    AsyncFunction("receivePushNotification") { userInfo: Map<String, Any?>, promise: Promise ->
+      ChannelIO.receivePushNotification(userInfo)
+      promise.resolve(mapOf("success" to true))
+    }
+
+    // 콜백 정리
+    Function("clearCallbacks") {
+      ChannelIO.setListener(null)
+      ChannelIO.setListener(pluginListener)
     }
   }
 
@@ -303,29 +377,56 @@ class ExpoChannelIoModule : Module() {
 
   private fun createUserDataFromMap(userInfo: Map<String, Any?>): UserData {
     val builder = UserData.Builder()
-    
-    val profileMap = mutableMapOf<String, Any>()
-    val reservedKeys = setOf("language", "tags")
-    
-    userInfo.forEach { (key, value) ->
-      if (!reservedKeys.contains(key) && value != null) {
-        profileMap[key] = value
-      }
-    }
-    
-    if (profileMap.isNotEmpty()) {
-      builder.setProfileMap(profileMap)
-    }
-    
+
+    // language 처리
     (userInfo["language"] as? String)?.let {
       builder.setLanguage(parseLanguage(it))
     }
-    
+
+    // tags 처리
     @Suppress("UNCHECKED_CAST")
     (userInfo["tags"] as? List<String>)?.let {
       builder.setTags(it)
     }
-    
+
+    // profile 처리
+    @Suppress("UNCHECKED_CAST")
+    (userInfo["profile"] as? Map<String, Any?>)?.let { profileData ->
+      val profileMap = mutableMapOf<String, Any>()
+      profileData.forEach { (key, value) ->
+        if (value != null) {
+          profileMap[key] = value
+        }
+      }
+      if (profileMap.isNotEmpty()) {
+        builder.setProfileMap(profileMap)
+      }
+    }
+
+    // profileOnce 처리
+    @Suppress("UNCHECKED_CAST")
+    (userInfo["profileOnce"] as? Map<String, Any?>)?.let { profileOnceData ->
+      val profileOnceMap = mutableMapOf<String, Any>()
+      profileOnceData.forEach { (key, value) ->
+        if (value != null) {
+          profileOnceMap[key] = value
+        }
+      }
+      if (profileOnceMap.isNotEmpty()) {
+        builder.setProfileOnceMap(profileOnceMap)
+      }
+    }
+
+    // unsubscribeEmail 처리
+    (userInfo["unsubscribeEmail"] as? Boolean)?.let {
+      builder.setUnsubscribeEmail(it)
+    }
+
+    // unsubscribeTexting 처리
+    (userInfo["unsubscribeTexting"] as? Boolean)?.let {
+      builder.setUnsubscribeTexting(it)
+    }
+
     return builder.build()
   }
 
@@ -337,6 +438,22 @@ class ExpoChannelIoModule : Module() {
     val yMargin = (optionData["yMargin"] as? Number)?.toFloat() ?: 0f
 
     return ChannelButtonOption(position, xMargin, yMargin)
+  }
+
+  private fun toBubbleOption(optionData: Map<String, Any?>?): BubbleOption? {
+    if (optionData == null) return null
+
+    val position = parseBubblePosition(optionData["position"] as? String)
+    val yMargin = (optionData["yMargin"] as? Number)?.toFloat() ?: 0f
+
+    return BubbleOption(position, yMargin)
+  }
+
+  private fun parseBubblePosition(position: String?): BubblePosition {
+    return when (position?.lowercase()) {
+      "top" -> BubblePosition.TOP
+      else -> BubblePosition.BOTTOM
+    }
   }
 
   private fun convertBootStatus(status: BootStatus): String {
@@ -354,11 +471,17 @@ class ExpoChannelIoModule : Module() {
 
   private fun convertUser(user: User): Map<String, Any?> {
     return mapOf(
+      "id" to user.id,
       "memberId" to user.memberId,
       "name" to user.name,
       "avatarUrl" to user.avatarUrl,
       "unread" to user.unread,
-      "alert" to user.alert
+      "alert" to user.alert,
+      "profile" to user.profile,
+      "tags" to user.tags,
+      "language" to user.language,
+      "unsubscribeEmail" to user.unsubscribeEmail,
+      "unsubscribeTexting" to user.unsubscribeTexting
     )
   }
 
