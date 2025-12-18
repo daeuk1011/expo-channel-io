@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.4](https://github.com/daeuk1011/expo-channel-io/compare/v0.5.3...v0.5.4) (2025-12-18)
+
+
+### Bug Fixes
+
+* add context parameter to hasStoredPushNotification for SDK v13 ([abcfb3b](https://github.com/daeuk1011/expo-channel-io/commit/abcfb3b78f96c7d01649bda3b633e1bacc3dded7))
+
 ## [0.5.3](https://github.com/daeuk1011/expo-channel-io/compare/v0.5.2...v0.5.3) (2025-12-18)
 
 
