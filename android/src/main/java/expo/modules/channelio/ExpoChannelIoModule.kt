@@ -5,10 +5,8 @@ import com.zoyi.channel.plugin.android.ChannelIO
 import com.zoyi.channel.plugin.android.open.config.BootConfig
 import com.zoyi.channel.plugin.android.open.enumerate.BootStatus
 import com.zoyi.channel.plugin.android.open.enumerate.ChannelButtonPosition
-import com.zoyi.channel.plugin.android.open.enumerate.BubblePosition
 import com.zoyi.channel.plugin.android.open.model.*
 import com.zoyi.channel.plugin.android.open.option.ChannelButtonOption
-import com.zoyi.channel.plugin.android.open.option.BubbleOption
 import com.zoyi.channel.plugin.android.open.option.Language
 import com.zoyi.channel.plugin.android.open.listener.ChannelPluginListener
 import expo.modules.kotlin.modules.Module
@@ -59,8 +57,6 @@ class ExpoChannelIoModule : Module() {
         val appearance = parseAppearance(settings["appearance"] as? String)
         val channelButtonOption = settings["channelButtonOption"] as? Map<String, Any?>
         val buttonOption = toChannelButtonOption(channelButtonOption)
-        val bubbleOptionData = settings["bubbleOption"] as? Map<String, Any?>
-        val bubbleOption = toBubbleOption(bubbleOptionData)
 
         val bootConfig = BootConfig.create(pluginKey)
           .setMemberId(memberId)
@@ -69,8 +65,6 @@ class ExpoChannelIoModule : Module() {
           .setChannelButtonOption(buttonOption)
           .setLanguage(language)
           .setAppearance(appearance)
-
-        bubbleOption?.let { bootConfig.setBubbleOption(it) }
 
         (settings["hidePopup"] as? Boolean)?.let {
           bootConfig.setHidePopup(it)
@@ -245,21 +239,20 @@ class ExpoChannelIoModule : Module() {
       ChannelIO.initPushToken(token)
     }
 
-    // 채널톡 푸시 알림인지 확인
+    // 채널톡 푸시 알림인지 확인 (Android에서는 Map<String, String> 타입 필요)
     AsyncFunction("isChannelPushNotification") { userInfo: Map<String, Any?>, promise: Promise ->
-      val isChannel = ChannelIO.isChannelPushNotification(userInfo)
-      promise.resolve(isChannel)
-    }
-
-    // 푸시 알림 저장
-    Function("storePushNotification") { userInfo: Map<String, Any?> ->
-      ChannelIO.storePushNotification(userInfo)
+      try {
+        val stringMap = userInfo.mapValues { it.value?.toString() ?: "" }
+        val isChannel = ChannelIO.isChannelPushNotification(stringMap)
+        promise.resolve(isChannel)
+      } catch (e: Exception) {
+        promise.resolve(false)
+      }
     }
 
     // 저장된 푸시 알림 확인
     AsyncFunction("hasStoredPushNotification") { promise: Promise ->
-      val hasStored = ChannelIO.hasStoredPushNotification()
-      promise.resolve(hasStored)
+      promise.resolve(ChannelIO.hasStoredPushNotification())
     }
 
     // 저장된 푸시 알림 열기
@@ -268,12 +261,6 @@ class ExpoChannelIoModule : Module() {
       if (context != null) {
         ChannelIO.openStoredPushNotification(context)
       }
-    }
-
-    // 푸시 알림 수신 처리
-    AsyncFunction("receivePushNotification") { userInfo: Map<String, Any?>, promise: Promise ->
-      ChannelIO.receivePushNotification(userInfo)
-      promise.resolve(mapOf("success" to true))
     }
 
     // 콜백 정리
@@ -343,21 +330,21 @@ class ExpoChannelIoModule : Module() {
 
   private fun createProfileFromMap(profileData: Map<String, Any?>?): Profile {
     val profile = Profile.create()
-    
+
     if (profileData == null) return profile
 
-    (profileData["name"] as? String)?.let { 
+    (profileData["name"] as? String)?.let {
       if (it.isNotBlank()) profile.setName(it)
     }
-    (profileData["email"] as? String)?.let { 
+    (profileData["email"] as? String)?.let {
       if (it.isNotBlank()) profile.setEmail(it)
     }
-    (profileData["mobileNumber"] as? String)?.let { 
+    (profileData["mobileNumber"] as? String)?.let {
       if (it.isNotBlank()) profile.setMobileNumber(it)
     } ?: (profileData["phoneNumber"] as? String)?.let {
       if (it.isNotBlank()) profile.setMobileNumber(it)
     }
-    (profileData["avatarUrl"] as? String)?.let { 
+    (profileData["avatarUrl"] as? String)?.let {
       if (it.isNotBlank()) profile.setAvatarUrl(it)
     }
 
@@ -436,22 +423,6 @@ class ExpoChannelIoModule : Module() {
     return ChannelButtonOption(position, xMargin, yMargin)
   }
 
-  private fun toBubbleOption(optionData: Map<String, Any?>?): BubbleOption? {
-    if (optionData == null) return null
-
-    val position = parseBubblePosition(optionData["position"] as? String)
-    val yMargin = (optionData["yMargin"] as? Number)?.toFloat() ?: 0f
-
-    return BubbleOption(position, yMargin)
-  }
-
-  private fun parseBubblePosition(position: String?): BubblePosition {
-    return when (position?.lowercase()) {
-      "top" -> BubblePosition.TOP
-      else -> BubblePosition.BOTTOM
-    }
-  }
-
   private fun convertBootStatus(status: BootStatus): String {
     return when (status) {
       BootStatus.SUCCESS -> "success"
@@ -475,9 +446,7 @@ class ExpoChannelIoModule : Module() {
       "alert" to user.alert,
       "profile" to user.profile,
       "tags" to user.tags,
-      "language" to user.language,
-      "unsubscribeEmail" to user.unsubscribeEmail,
-      "unsubscribeTexting" to user.unsubscribeTexting
+      "language" to user.language
     )
   }
 

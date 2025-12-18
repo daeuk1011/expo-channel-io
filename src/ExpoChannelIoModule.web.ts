@@ -323,20 +323,12 @@ class ExpoChannelIoModule extends NativeModule {
     return Promise.resolve(false);
   }
 
-  storePushNotification(_userInfo: Record<string, any>): void {
-    console.warn("[ExpoChannelIo] storePushNotification is not supported on web");
-  }
-
   hasStoredPushNotification(): Promise<boolean> {
     return Promise.resolve(false);
   }
 
   openStoredPushNotification(): void {
     console.warn("[ExpoChannelIo] openStoredPushNotification is not supported on web");
-  }
-
-  receivePushNotification(_userInfo: Record<string, any>): Promise<{ success: boolean }> {
-    return Promise.resolve({ success: false });
   }
 
   // Web 전용 이벤트 리스너 메서드들 (호환성 유지)

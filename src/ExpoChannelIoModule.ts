@@ -8,7 +8,6 @@ import {
   Profile,
   User,
   UserData,
-  PushNotificationResult,
   TagOperationResult,
 } from "./ExpoChannelIo.types";
 
@@ -36,10 +35,8 @@ declare class ExpoChannelIoModule extends NativeModule {
   // 푸시 알림 관련
   initPushToken(deviceToken: string): void;
   isChannelPushNotification(userInfo: Record<string, any>): Promise<boolean>;
-  storePushNotification(userInfo: Record<string, any>): void;
   hasStoredPushNotification(): Promise<boolean>;
   openStoredPushNotification(): void;
-  receivePushNotification(userInfo: Record<string, any>): Promise<PushNotificationResult>;
 
   // 상태 조회
   isBooted(): boolean;
