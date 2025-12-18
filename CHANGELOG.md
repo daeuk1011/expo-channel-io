@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.1](https://github.com/daeuk1011/expo-channel-io/compare/v0.5.0...v0.5.1) (2025-12-18)
+
+
+### Bug Fixes
+
+* handle hideChannelButtonOnBoot for iOS/Android SDK v13 ([19e36a6](https://github.com/daeuk1011/expo-channel-io/commit/19e36a67c253cb972d9fd59a9ce6ce38929590ad))
+
 ## [0.5.0](https://github.com/daeuk1011/expo-channel-io/compare/v0.4.0...v0.5.0) (2025-12-18)
 
 
