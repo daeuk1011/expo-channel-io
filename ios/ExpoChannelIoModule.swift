@@ -60,10 +60,6 @@ public class ExpoChannelIoModule: Module {
                 config.bubbleOption = self.buildBubbleOption(from: bubbleOption)
             }
 
-            if let hideChannelButtonOnBoot = bootConfig["hideChannelButtonOnBoot"] as? Bool {
-                config.hideChannelButtonOnBoot = hideChannelButtonOnBoot
-            }
-
             if let hidePopup = bootConfig["hidePopup"] as? Bool {
                 config.hidePopup = hidePopup
             }
@@ -80,7 +76,13 @@ public class ExpoChannelIoModule: Module {
                 config.unsubscribeTexting = unsubscribeTexting
             }
 
+            // hideChannelButtonOnBoot는 iOS SDK에 없으므로 boot 후 처리
+            let hideChannelButtonOnBoot = bootConfig["hideChannelButtonOnBoot"] as? Bool ?? false
+
             ChannelIO.boot(with: config) { status, user in
+                if hideChannelButtonOnBoot {
+                    ChannelIO.hideChannelButton()
+                }
                 let result: [String: Any] = [
                     "status": self.convertBootStatus(status),
                     "user": user != nil ? self.convertUser(user: user!) : NSNull()

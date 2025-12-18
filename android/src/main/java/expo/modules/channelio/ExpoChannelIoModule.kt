@@ -72,10 +72,6 @@ class ExpoChannelIoModule : Module() {
 
         bubbleOption?.let { bootConfig.setBubbleOption(it) }
 
-        (settings["hideChannelButtonOnBoot"] as? Boolean)?.let {
-          bootConfig.setHideChannelButtonOnBoot(it)
-        }
-
         (settings["hidePopup"] as? Boolean)?.let {
           bootConfig.setHidePopup(it)
         }
@@ -92,7 +88,13 @@ class ExpoChannelIoModule : Module() {
           bootConfig.setUnsubscribeTexting(it)
         }
 
+        // hideChannelButtonOnBoot는 Android SDK에 없으므로 boot 후 처리
+        val hideChannelButtonOnBoot = settings["hideChannelButtonOnBoot"] as? Boolean ?: false
+
         ChannelIO.boot(bootConfig) { bootStatus, user ->
+          if (hideChannelButtonOnBoot) {
+            ChannelIO.hideChannelButton()
+          }
           val result = mapOf(
             "status" to convertBootStatus(bootStatus),
             "user" to if (user != null) convertUser(user) else null
