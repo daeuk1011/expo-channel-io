@@ -1,6 +1,6 @@
 {
   "name": "expo-channel-io",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "My new module",
   "main": "build/index.js",
   "types": "build/index.d.ts",

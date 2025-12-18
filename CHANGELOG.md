@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.2](https://github.com/daeuk1011/expo-channel-io/compare/v0.5.1...v0.5.2) (2025-12-18)
+
+
+### Bug Fixes
+
+* remove getCurrentUser (not available in SDK v13) ([15e8567](https://github.com/daeuk1011/expo-channel-io/commit/15e8567775b3f8a5be60a685dd13a9da05c0016b))
+
 ## [0.5.1](https://github.com/daeuk1011/expo-channel-io/compare/v0.5.0...v0.5.1) (2025-12-18)
 
 
