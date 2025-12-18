@@ -252,7 +252,12 @@ class ExpoChannelIoModule : Module() {
 
     // 저장된 푸시 알림 확인
     AsyncFunction("hasStoredPushNotification") { promise: Promise ->
-      promise.resolve(ChannelIO.hasStoredPushNotification())
+      val context = appContext.currentActivity
+      if (context != null) {
+        promise.resolve(ChannelIO.hasStoredPushNotification(context))
+      } else {
+        promise.resolve(false)
+      }
     }
 
     // 저장된 푸시 알림 열기
