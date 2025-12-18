@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.3](https://github.com/daeuk1011/expo-channel-io/compare/v0.5.2...v0.5.3) (2025-12-18)
+
+
+### Bug Fixes
+
+* update Android module for SDK v13 compatibility ([fb22652](https://github.com/daeuk1011/expo-channel-io/commit/fb226528f555c58fc2c71c7ea1e9b48d8578a8e1))
+
 ## [0.5.2](https://github.com/daeuk1011/expo-channel-io/compare/v0.5.1...v0.5.2) (2025-12-18)
 
 
