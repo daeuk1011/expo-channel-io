@@ -238,12 +238,6 @@ public class ExpoChannelIoModule: Module {
             return ChannelIO.isBooted
         }
 
-        // 현재 사용자 정보 가져오기
-        Function("getCurrentUser") { () -> [String: Any]? in
-            guard let user = ChannelIO.user else { return nil }
-            return self.convertUser(user: user)
-        }
-
         // 디버그 모드 설정
         Function("setDebugMode") { (enabled: Bool) in
             ChannelIO.setDebugMode(with: enabled)

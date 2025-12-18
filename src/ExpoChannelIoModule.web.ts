@@ -302,11 +302,6 @@ class ExpoChannelIoModule extends NativeModule {
     return !!window.ChannelIO && !!window.ChannelIOInitialized;
   }
 
-  getCurrentUser(): User | null {
-    // Web SDK는 직접 user 객체를 제공하지 않음
-    return null;
-  }
-
   // 설정
   setDebugMode(enabled: boolean): void {
     // Web SDK는 debug mode를 지원하지 않으므로 console로 로깅

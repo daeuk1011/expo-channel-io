@@ -188,12 +188,6 @@ export default function App() {
     log("Debug mode enabled");
   };
 
-  // Get Current User
-  const handleGetCurrentUser = () => {
-    const user = ExpoChannelIo.getCurrentUser();
-    log(`Current user: ${JSON.stringify(user)}`);
-    setCurrentUser(user);
-  };
 
   // Hide Popup
   const handleHidePopup = () => {
@@ -257,7 +251,6 @@ export default function App() {
         {/* User Management */}
         <Group title="User Management">
           <Button title="Update User" onPress={handleUpdateUser} />
-          <Button title="Get Current User" onPress={handleGetCurrentUser} />
           <View style={styles.buttonRow}>
             <Button title="Add Tags" onPress={handleAddTags} />
             <Button title="Remove Tags" onPress={handleRemoveTags} />

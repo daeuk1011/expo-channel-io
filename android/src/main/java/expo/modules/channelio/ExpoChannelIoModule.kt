@@ -240,12 +240,6 @@ class ExpoChannelIoModule : Module() {
       ChannelIO.setAppearance(parseAppearance(appearance))
     }
 
-    // 현재 사용자 정보 가져오기
-    Function("getCurrentUser") {
-      val user = ChannelIO.user
-      return@Function if (user != null) convertUser(user) else null
-    }
-
     // 푸시 토큰 등록
     Function("initPushToken") { token: String ->
       ChannelIO.initPushToken(token)

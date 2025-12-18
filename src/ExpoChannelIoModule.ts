@@ -43,7 +43,6 @@ declare class ExpoChannelIoModule extends NativeModule {
 
   // 상태 조회
   isBooted(): boolean;
-  getCurrentUser(): User | null;
 
   // 설정
   setDebugMode(enabled: boolean): void;
