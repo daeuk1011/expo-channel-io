@@ -8,7 +8,6 @@ import {
   User,
   UserData,
   TagOperationResult,
-  PushNotificationResult,
 } from "./ExpoChannelIo.types";
 
 declare global {
@@ -132,6 +131,7 @@ class ExpoChannelIoModule extends NativeModule {
       name: webUser.name,
       avatarUrl: webUser.avatarUrl,
       unread: webUser.alert,
+      alert: webUser.alert,
     };
   }
 
@@ -282,11 +282,11 @@ class ExpoChannelIoModule extends NativeModule {
     window.ChannelIO?.("track", eventName, eventProperties || undefined);
   }
 
-  setPage(page: string, profile: Profile): void {
+  setPage(page: string, profile?: Profile | null): void {
     window.ChannelIO?.("setPage", page);
     // Web SDK의 setPage는 profile을 받지 않으므로 updateUser로 처리
     if (profile && Object.keys(profile).length > 0) {
-      this.updateUser(profile).catch(() => {
+      this.updateUser({ profile }).catch(() => {
         // Silent fail for setPage profile update
       });
     }
