@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.5.0](https://github.com/daeuk1011/expo-channel-io/compare/v0.4.0...v0.5.0) (2025-12-18)
+
+
+### Features
+
+* update example app with all SDK features ([09127ff](https://github.com/daeuk1011/expo-channel-io/commit/09127ff5e48606d5a7fa33a1899beff30da7c379))
+
+
+### Bug Fixes
+
+* combine release-please and npm publish into single workflow ([a984fa0](https://github.com/daeuk1011/expo-channel-io/commit/a984fa0deeb7c24fb59638f7faaa698c23560315))
+
 ## [0.4.0](https://github.com/daeuk1011/expo-channel-io/compare/v0.3.1...v0.4.0) (2025-12-18)
 
 
