@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.10](https://github.com/daeuk1011/expo-channel-io/compare/v0.5.9...v0.5.10) (2025-12-19)
+
+
+### Bug Fixes
+
+* find and show channel button view directly in decorView ([2326491](https://github.com/daeuk1011/expo-channel-io/commit/232649187f3c082f74f539121bbcde4c650c6cdd))
+
 ## [0.5.9](https://github.com/daeuk1011/expo-channel-io/compare/v0.5.8...v0.5.9) (2025-12-19)
 
 
