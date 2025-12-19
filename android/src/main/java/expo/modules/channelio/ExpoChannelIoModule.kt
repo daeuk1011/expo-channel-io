@@ -98,14 +98,19 @@ class ExpoChannelIoModule : Module() {
               Log.d("ExpoChannelIo", "boot callback - calling showChannelButton()")
               ChannelIO.showChannelButton()
 
-              // boot 후 현재 Activity에서 Channel 버튼 view 찾아서 직접 표시
-              appContext.currentActivity?.let { activity ->
-                Log.d("ExpoChannelIo", "boot callback - triggering button show for current activity")
-                activity.runOnUiThread {
+              // 등록된 콜백들 실행 (onResume에서 등록된 콜백)
+              Log.d("ExpoChannelIo", "boot callback - notifying boot completed")
+              ChannelButtonState.notifyBootCompleted()
+
+              // 추가로 현재 Activity에서 직접 showChannelButton 호출 시도
+              val currentActivity = ChannelButtonState.getCurrentActivity() ?: appContext.currentActivity
+              Log.d("ExpoChannelIo", "boot callback - currentActivity: $currentActivity")
+              currentActivity?.let { activity ->
+                android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+                  Log.d("ExpoChannelIo", "boot callback delayed - calling showChannelButton on UI thread")
                   ChannelIO.showChannelButton()
-                  // decorView에서 Channel 버튼 찾기
                   findAndShowChannelButton(activity)
-                }
+                }, 100)
               }
             } else {
               Log.d("ExpoChannelIo", "boot callback - calling hideChannelButton()")
@@ -509,15 +514,21 @@ class ExpoChannelIoModule : Module() {
   // decorView에서 Channel 버튼 찾아서 표시
   private fun findAndShowChannelButton(activity: Activity) {
     try {
-      val decorView = activity.window?.decorView as? ViewGroup ?: return
-      Log.d("ExpoChannelIo", "findAndShowChannelButton - searching in decorView")
-      findChannelButtonRecursive(decorView, 0)
+      val decorView = activity.window?.decorView as? ViewGroup
+      if (decorView == null) {
+        Log.w("ExpoChannelIo", "findAndShowChannelButton - decorView is null")
+        return
+      }
+      Log.d("ExpoChannelIo", "findAndShowChannelButton - searching in decorView, childCount: ${decorView.childCount}")
+      var foundCount = findChannelButtonRecursive(decorView, 0)
+      Log.d("ExpoChannelIo", "findAndShowChannelButton - search complete, found $foundCount Channel views")
     } catch (e: Exception) {
       Log.e("ExpoChannelIo", "findAndShowChannelButton error", e)
     }
   }
 
-  private fun findChannelButtonRecursive(viewGroup: ViewGroup, depth: Int) {
+  private fun findChannelButtonRecursive(viewGroup: ViewGroup, depth: Int): Int {
+    var foundCount = 0
     for (i in 0 until viewGroup.childCount) {
       val child = viewGroup.getChildAt(i)
       val className = child.javaClass.name
@@ -526,17 +537,20 @@ class ExpoChannelIoModule : Module() {
       if (className.contains("channel", ignoreCase = true) ||
           className.contains("zoyi", ignoreCase = true) ||
           className.contains("ChannelButton", ignoreCase = true)) {
-        Log.d("ExpoChannelIo", "Found Channel view: $className, visibility: ${child.visibility}")
+        Log.d("ExpoChannelIo", "Found Channel view at depth $depth: $className, visibility: ${child.visibility}, id: ${child.id}")
+        foundCount++
         if (child.visibility != View.VISIBLE) {
           child.visibility = View.VISIBLE
+          child.requestLayout()
           Log.d("ExpoChannelIo", "Set visibility to VISIBLE for: $className")
         }
       }
 
       // 재귀적으로 child 탐색
       if (child is ViewGroup) {
-        findChannelButtonRecursive(child, depth + 1)
+        foundCount += findChannelButtonRecursive(child, depth + 1)
       }
     }
+    return foundCount
   }
 }
