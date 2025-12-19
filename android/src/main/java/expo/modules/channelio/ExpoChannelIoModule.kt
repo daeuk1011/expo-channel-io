@@ -1,6 +1,9 @@
 package expo.modules.channelio
 
+import android.app.Activity
 import android.util.Log
+import android.view.View
+import android.view.ViewGroup
 import com.zoyi.channel.plugin.android.ChannelIO
 import com.zoyi.channel.plugin.android.open.config.BootConfig
 import com.zoyi.channel.plugin.android.open.enumerate.BootStatus
@@ -95,11 +98,13 @@ class ExpoChannelIoModule : Module() {
               Log.d("ExpoChannelIo", "boot callback - calling showChannelButton()")
               ChannelIO.showChannelButton()
 
-              // boot 후 현재 Activity에 대해 onResume 로직 재실행
+              // boot 후 현재 Activity에서 Channel 버튼 view 찾아서 직접 표시
               appContext.currentActivity?.let { activity ->
                 Log.d("ExpoChannelIo", "boot callback - triggering button show for current activity")
                 activity.runOnUiThread {
                   ChannelIO.showChannelButton()
+                  // decorView에서 Channel 버튼 찾기
+                  findAndShowChannelButton(activity)
                 }
               }
             } else {
@@ -498,6 +503,40 @@ class ExpoChannelIoModule : Module() {
     return when (position?.lowercase()) {
       "left" -> ChannelButtonPosition.LEFT
       else -> ChannelButtonPosition.RIGHT
+    }
+  }
+
+  // decorView에서 Channel 버튼 찾아서 표시
+  private fun findAndShowChannelButton(activity: Activity) {
+    try {
+      val decorView = activity.window?.decorView as? ViewGroup ?: return
+      Log.d("ExpoChannelIo", "findAndShowChannelButton - searching in decorView")
+      findChannelButtonRecursive(decorView, 0)
+    } catch (e: Exception) {
+      Log.e("ExpoChannelIo", "findAndShowChannelButton error", e)
+    }
+  }
+
+  private fun findChannelButtonRecursive(viewGroup: ViewGroup, depth: Int) {
+    for (i in 0 until viewGroup.childCount) {
+      val child = viewGroup.getChildAt(i)
+      val className = child.javaClass.name
+
+      // Channel.io SDK 관련 view 찾기
+      if (className.contains("channel", ignoreCase = true) ||
+          className.contains("zoyi", ignoreCase = true) ||
+          className.contains("ChannelButton", ignoreCase = true)) {
+        Log.d("ExpoChannelIo", "Found Channel view: $className, visibility: ${child.visibility}")
+        if (child.visibility != View.VISIBLE) {
+          child.visibility = View.VISIBLE
+          Log.d("ExpoChannelIo", "Set visibility to VISIBLE for: $className")
+        }
+      }
+
+      // 재귀적으로 child 탐색
+      if (child is ViewGroup) {
+        findChannelButtonRecursive(child, depth + 1)
+      }
     }
   }
 }
