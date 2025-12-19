@@ -1,7 +1,5 @@
 package expo.modules.channelio
 
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import com.zoyi.channel.plugin.android.ChannelIO
 import com.zoyi.channel.plugin.android.open.config.BootConfig
@@ -84,22 +82,18 @@ class ExpoChannelIoModule : Module() {
           bootConfig.setUnsubscribeTexting(it)
         }
 
-        // hideChannelButtonOnBoot는 Android SDK에 없으므로 boot 후 처리
+        // hideChannelButtonOnBoot는 Android SDK BootConfig에 없으므로 수동 처리
         val hideChannelButtonOnBoot = settings["hideChannelButtonOnBoot"] as? Boolean ?: false
+
+        // 공식 문서: "The function takes effect even if it was called before boot() completes."
+        // boot 전에 showChannelButton()을 호출하면 boot 완료 후 버튼이 표시됨
+        if (!hideChannelButtonOnBoot) {
+          ChannelIO.showChannelButton()
+        }
 
         ChannelIO.boot(bootConfig) { bootStatus, user ->
           if (hideChannelButtonOnBoot) {
             ChannelIO.hideChannelButton()
-          } else if (bootStatus == BootStatus.SUCCESS) {
-            // Workaround: Force show channel button on main thread after boot
-            // This fixes the issue where button doesn't appear in production builds
-            Handler(Looper.getMainLooper()).postDelayed({
-              try {
-                ChannelIO.showChannelButton()
-              } catch (e: Exception) {
-                Log.e("ExpoChannelIo", "Failed to show channel button", e)
-              }
-            }, 100)
           }
           val result = mapOf(
             "status" to convertBootStatus(bootStatus),
