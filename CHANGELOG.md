@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.5](https://github.com/daeuk1011/expo-channel-io/compare/v0.5.4...v0.5.5) (2025-12-19)
+
+
+### Bug Fixes
+
+* explicitly set attachView to true for Android channel button visibility ([cb66342](https://github.com/daeuk1011/expo-channel-io/commit/cb66342e176bfd9299dafece3fe868f1e0892cf6))
+
 ## [0.5.4](https://github.com/daeuk1011/expo-channel-io/compare/v0.5.3...v0.5.4) (2025-12-18)
 
 
