@@ -1,9 +1,6 @@
 package expo.modules.channelio
 
-import android.app.Activity
 import android.util.Log
-import android.view.View
-import android.view.ViewGroup
 import com.zoyi.channel.plugin.android.ChannelIO
 import com.zoyi.channel.plugin.android.open.config.BootConfig
 import com.zoyi.channel.plugin.android.open.enumerate.BootStatus
@@ -495,48 +492,5 @@ class ExpoChannelIoModule : Module() {
       "left" -> ChannelButtonPosition.LEFT
       else -> ChannelButtonPosition.RIGHT
     }
-  }
-
-  // decorView에서 Channel 버튼 찾아서 표시
-  private fun findAndShowChannelButton(activity: Activity) {
-    try {
-      val decorView = activity.window?.decorView as? ViewGroup
-      if (decorView == null) {
-        Log.w("ExpoChannelIo", "findAndShowChannelButton - decorView is null")
-        return
-      }
-      Log.d("ExpoChannelIo", "findAndShowChannelButton - searching in decorView, childCount: ${decorView.childCount}")
-      var foundCount = findChannelButtonRecursive(decorView, 0)
-      Log.d("ExpoChannelIo", "findAndShowChannelButton - search complete, found $foundCount Channel views")
-    } catch (e: Exception) {
-      Log.e("ExpoChannelIo", "findAndShowChannelButton error", e)
-    }
-  }
-
-  private fun findChannelButtonRecursive(viewGroup: ViewGroup, depth: Int): Int {
-    var foundCount = 0
-    for (i in 0 until viewGroup.childCount) {
-      val child = viewGroup.getChildAt(i)
-      val className = child.javaClass.name
-
-      // Channel.io SDK 관련 view 찾기
-      if (className.contains("channel", ignoreCase = true) ||
-          className.contains("zoyi", ignoreCase = true) ||
-          className.contains("ChannelButton", ignoreCase = true)) {
-        Log.d("ExpoChannelIo", "Found Channel view at depth $depth: $className, visibility: ${child.visibility}, id: ${child.id}")
-        foundCount++
-        if (child.visibility != View.VISIBLE) {
-          child.visibility = View.VISIBLE
-          child.requestLayout()
-          Log.d("ExpoChannelIo", "Set visibility to VISIBLE for: $className")
-        }
-      }
-
-      // 재귀적으로 child 탐색
-      if (child is ViewGroup) {
-        foundCount += findChannelButtonRecursive(child, depth + 1)
-      }
-    }
-    return foundCount
   }
 }
