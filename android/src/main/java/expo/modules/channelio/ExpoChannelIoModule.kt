@@ -82,23 +82,14 @@ class ExpoChannelIoModule : Module() {
           bootConfig.setUnsubscribeTexting(it)
         }
 
-        // hideChannelButtonOnBoot 처리 - 글로벌 상태 설정
         val hideChannelButtonOnBoot = settings["hideChannelButtonOnBoot"] as? Boolean ?: false
-        ChannelButtonState.isVisible = !hideChannelButtonOnBoot
-        Log.d("ExpoChannelIo", "boot - hideChannelButtonOnBoot: $hideChannelButtonOnBoot, isVisible: ${ChannelButtonState.isVisible}")
+        Log.d("ExpoChannelIo", "boot - hideChannelButtonOnBoot: $hideChannelButtonOnBoot")
 
         ChannelIO.boot(bootConfig) { bootStatus, user ->
-          Log.d("ExpoChannelIo", "boot callback - status: $bootStatus, isVisible: ${ChannelButtonState.isVisible}")
-          // boot 완료 후 visibility 상태 적용
-          if (bootStatus == BootStatus.SUCCESS) {
-            // hideChannelButtonOnBoot가 true인 경우에만 숨김 처리
-            // (showChannelButton은 Application.onCreate에서 이미 호출됨)
-            if (!ChannelButtonState.isVisible) {
-              Log.d("ExpoChannelIo", "boot callback - hiding channel button (hideChannelButtonOnBoot: true)")
-              ChannelIO.hideChannelButton()
-            } else {
-              Log.d("ExpoChannelIo", "boot callback - button should already be visible")
-            }
+          Log.d("ExpoChannelIo", "boot callback - status: $bootStatus")
+          if (bootStatus == BootStatus.SUCCESS && hideChannelButtonOnBoot) {
+            Log.d("ExpoChannelIo", "boot callback - hiding channel button")
+            ChannelIO.hideChannelButton()
           }
           val result = mapOf(
             "status" to convertBootStatus(bootStatus),
@@ -121,13 +112,11 @@ class ExpoChannelIoModule : Module() {
 
     Function("showChannelButton") {
       Log.d("ExpoChannelIo", "showChannelButton called")
-      ChannelButtonState.isVisible = true
       ChannelIO.showChannelButton()
     }
 
     Function("hideChannelButton") {
       Log.d("ExpoChannelIo", "hideChannelButton called")
-      ChannelButtonState.isVisible = false
       ChannelIO.hideChannelButton()
     }
 
