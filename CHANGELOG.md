@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.8](https://github.com/daeuk1011/expo-channel-io/compare/v0.5.7...v0.5.8) (2025-12-19)
+
+
+### Bug Fixes
+
+* use ReactActivityLifecycleListener to show channel button on resume ([9bd5fe2](https://github.com/daeuk1011/expo-channel-io/commit/9bd5fe2c1cc20d571c29839f25559ec672730f9a))
+
 ## [0.5.7](https://github.com/daeuk1011/expo-channel-io/compare/v0.5.6...v0.5.7) (2025-12-19)
 
 
