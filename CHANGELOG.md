@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.7](https://github.com/daeuk1011/expo-channel-io/compare/v0.5.6...v0.5.7) (2025-12-19)
+
+
+### Bug Fixes
+
+* call showChannelButton before boot for immediate visibility ([33ba208](https://github.com/daeuk1011/expo-channel-io/commit/33ba2089f0b6251aaf361be1ba45465cd592d987))
+
 ## [0.5.6](https://github.com/daeuk1011/expo-channel-io/compare/v0.5.5...v0.5.6) (2025-12-19)
 
 
