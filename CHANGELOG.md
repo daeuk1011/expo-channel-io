@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.9](https://github.com/daeuk1011/expo-channel-io/compare/v0.5.8...v0.5.9) (2025-12-19)
+
+
+### Bug Fixes
+
+* call showChannelButton on UI thread after boot ([5634003](https://github.com/daeuk1011/expo-channel-io/commit/5634003b847e4e876963a26ab0c18aa1b3a5cf36))
+
 ## [0.5.8](https://github.com/daeuk1011/expo-channel-io/compare/v0.5.7...v0.5.8) (2025-12-19)
 
 
