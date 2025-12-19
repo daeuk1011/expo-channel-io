@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.13](https://github.com/daeuk1011/expo-channel-io/compare/v0.5.12...v0.5.13) (2025-12-19)
+
+
+### Bug Fixes
+
+* call showChannelButton in onResume regardless of boot status ([69fbae7](https://github.com/daeuk1011/expo-channel-io/commit/69fbae790a64499995f93ca4e09d36f5f5945a79))
+
 ## [0.5.12](https://github.com/daeuk1011/expo-channel-io/compare/v0.5.11...v0.5.12) (2025-12-19)
 
 
