@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.11](https://github.com/daeuk1011/expo-channel-io/compare/v0.5.10...v0.5.11) (2025-12-19)
+
+
+### Bug Fixes
+
+* add boot completion callback for Android channel button visibility ([0ebe40b](https://github.com/daeuk1011/expo-channel-io/commit/0ebe40bd83dbcd3fab67967e0361b2d50404cfb2))
+
 ## [0.5.10](https://github.com/daeuk1011/expo-channel-io/compare/v0.5.9...v0.5.10) (2025-12-19)
 
 
