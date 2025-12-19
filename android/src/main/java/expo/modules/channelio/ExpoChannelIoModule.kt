@@ -1,5 +1,7 @@
 package expo.modules.channelio
 
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import com.zoyi.channel.plugin.android.ChannelIO
 import com.zoyi.channel.plugin.android.open.config.BootConfig
@@ -88,6 +90,16 @@ class ExpoChannelIoModule : Module() {
         ChannelIO.boot(bootConfig) { bootStatus, user ->
           if (hideChannelButtonOnBoot) {
             ChannelIO.hideChannelButton()
+          } else if (bootStatus == BootStatus.SUCCESS) {
+            // Workaround: Force show channel button on main thread after boot
+            // This fixes the issue where button doesn't appear in production builds
+            Handler(Looper.getMainLooper()).postDelayed({
+              try {
+                ChannelIO.showChannelButton()
+              } catch (e: Exception) {
+                Log.e("ExpoChannelIo", "Failed to show channel button", e)
+              }
+            }, 100)
           }
           val result = mapOf(
             "status" to convertBootStatus(bootStatus),
