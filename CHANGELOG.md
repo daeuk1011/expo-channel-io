@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.12](https://github.com/daeuk1011/expo-channel-io/compare/v0.5.11...v0.5.12) (2025-12-19)
+
+
+### Bug Fixes
+
+* call showChannelButton before Activity is shown ([554dfc5](https://github.com/daeuk1011/expo-channel-io/commit/554dfc5d8c7d6eb828a67b5a74639339b2ecad2c))
+
 ## [0.5.11](https://github.com/daeuk1011/expo-channel-io/compare/v0.5.10...v0.5.11) (2025-12-19)
 
 
