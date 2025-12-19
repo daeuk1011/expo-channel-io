@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.6](https://github.com/daeuk1011/expo-channel-io/compare/v0.5.5...v0.5.6) (2025-12-19)
+
+
+### Bug Fixes
+
+* force show channel button on main thread after boot success ([84a550b](https://github.com/daeuk1011/expo-channel-io/commit/84a550bac61ec57f4bed58f6e19e175cfec3ce16))
+
 ## [0.5.5](https://github.com/daeuk1011/expo-channel-io/compare/v0.5.4...v0.5.5) (2025-12-19)
 
 
