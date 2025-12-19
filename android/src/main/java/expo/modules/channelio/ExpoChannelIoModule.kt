@@ -82,18 +82,22 @@ class ExpoChannelIoModule : Module() {
           bootConfig.setUnsubscribeTexting(it)
         }
 
-        // hideChannelButtonOnBoot는 Android SDK BootConfig에 없으므로 수동 처리
+        // hideChannelButtonOnBoot 처리 - 글로벌 상태 설정
         val hideChannelButtonOnBoot = settings["hideChannelButtonOnBoot"] as? Boolean ?: false
-
-        // 공식 문서: "The function takes effect even if it was called before boot() completes."
-        // boot 전에 showChannelButton()을 호출하면 boot 완료 후 버튼이 표시됨
-        if (!hideChannelButtonOnBoot) {
-          ChannelIO.showChannelButton()
-        }
+        ChannelButtonState.isVisible = !hideChannelButtonOnBoot
+        Log.d("ExpoChannelIo", "boot - hideChannelButtonOnBoot: $hideChannelButtonOnBoot, isVisible: ${ChannelButtonState.isVisible}")
 
         ChannelIO.boot(bootConfig) { bootStatus, user ->
-          if (hideChannelButtonOnBoot) {
-            ChannelIO.hideChannelButton()
+          Log.d("ExpoChannelIo", "boot callback - status: $bootStatus, isVisible: ${ChannelButtonState.isVisible}")
+          // boot 완료 후 visibility 상태 적용
+          if (bootStatus == BootStatus.SUCCESS) {
+            if (ChannelButtonState.isVisible) {
+              Log.d("ExpoChannelIo", "boot callback - calling showChannelButton()")
+              ChannelIO.showChannelButton()
+            } else {
+              Log.d("ExpoChannelIo", "boot callback - calling hideChannelButton()")
+              ChannelIO.hideChannelButton()
+            }
           }
           val result = mapOf(
             "status" to convertBootStatus(bootStatus),
@@ -115,10 +119,14 @@ class ExpoChannelIoModule : Module() {
     }
 
     Function("showChannelButton") {
+      Log.d("ExpoChannelIo", "showChannelButton called")
+      ChannelButtonState.isVisible = true
       ChannelIO.showChannelButton()
     }
 
     Function("hideChannelButton") {
+      Log.d("ExpoChannelIo", "hideChannelButton called")
+      ChannelButtonState.isVisible = false
       ChannelIO.hideChannelButton()
     }
 
