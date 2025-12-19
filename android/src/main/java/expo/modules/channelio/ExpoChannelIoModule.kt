@@ -94,27 +94,13 @@ class ExpoChannelIoModule : Module() {
           Log.d("ExpoChannelIo", "boot callback - status: $bootStatus, isVisible: ${ChannelButtonState.isVisible}")
           // boot 완료 후 visibility 상태 적용
           if (bootStatus == BootStatus.SUCCESS) {
-            if (ChannelButtonState.isVisible) {
-              Log.d("ExpoChannelIo", "boot callback - calling showChannelButton()")
-              ChannelIO.showChannelButton()
-
-              // 등록된 콜백들 실행 (onResume에서 등록된 콜백)
-              Log.d("ExpoChannelIo", "boot callback - notifying boot completed")
-              ChannelButtonState.notifyBootCompleted()
-
-              // 추가로 현재 Activity에서 직접 showChannelButton 호출 시도
-              val currentActivity = ChannelButtonState.getCurrentActivity() ?: appContext.currentActivity
-              Log.d("ExpoChannelIo", "boot callback - currentActivity: $currentActivity")
-              currentActivity?.let { activity ->
-                android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
-                  Log.d("ExpoChannelIo", "boot callback delayed - calling showChannelButton on UI thread")
-                  ChannelIO.showChannelButton()
-                  findAndShowChannelButton(activity)
-                }, 100)
-              }
-            } else {
-              Log.d("ExpoChannelIo", "boot callback - calling hideChannelButton()")
+            // hideChannelButtonOnBoot가 true인 경우에만 숨김 처리
+            // (showChannelButton은 Application.onCreate에서 이미 호출됨)
+            if (!ChannelButtonState.isVisible) {
+              Log.d("ExpoChannelIo", "boot callback - hiding channel button (hideChannelButtonOnBoot: true)")
               ChannelIO.hideChannelButton()
+            } else {
+              Log.d("ExpoChannelIo", "boot callback - button should already be visible")
             }
           }
           val result = mapOf(
