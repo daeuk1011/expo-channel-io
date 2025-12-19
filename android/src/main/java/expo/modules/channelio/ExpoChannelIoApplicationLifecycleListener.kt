@@ -7,6 +7,6 @@ import expo.modules.core.interfaces.ApplicationLifecycleListener
 
 class ExpoChannelIoApplicationLifecycleListener : ApplicationLifecycleListener {
     override fun onCreate(application: Application) {
-        ChannelIO.initialize(application)
+        ChannelIO.initialize(application, true)
     }
 }
