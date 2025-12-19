@@ -94,6 +94,14 @@ class ExpoChannelIoModule : Module() {
             if (ChannelButtonState.isVisible) {
               Log.d("ExpoChannelIo", "boot callback - calling showChannelButton()")
               ChannelIO.showChannelButton()
+
+              // boot 후 현재 Activity에 대해 onResume 로직 재실행
+              appContext.currentActivity?.let { activity ->
+                Log.d("ExpoChannelIo", "boot callback - triggering button show for current activity")
+                activity.runOnUiThread {
+                  ChannelIO.showChannelButton()
+                }
+              }
             } else {
               Log.d("ExpoChannelIo", "boot callback - calling hideChannelButton()")
               ChannelIO.hideChannelButton()
