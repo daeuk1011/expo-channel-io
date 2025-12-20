@@ -9,5 +9,6 @@ class ExpoChannelIoApplicationLifecycleListener : ApplicationLifecycleListener {
     override fun onCreate(application: Application) {
         Log.d("ExpoChannelIo", "Application.onCreate - initializing ChannelIO")
         ChannelIO.initialize(application)
+        ChannelIO.showChannelButton()
     }
 }
