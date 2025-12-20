@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.14](https://github.com/daeuk1011/expo-channel-io/compare/v0.5.13...v0.5.14) (2025-12-20)
+
+
+### Bug Fixes
+
+* call showChannelButton before Activity starts on cold boot ([358af56](https://github.com/daeuk1011/expo-channel-io/commit/358af56d7470af9d9f1fb0f1629696f28ae7d332))
+
 ## [0.5.13](https://github.com/daeuk1011/expo-channel-io/compare/v0.5.12...v0.5.13) (2025-12-19)
 
 
