@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.15](https://github.com/daeuk1011/expo-channel-io/compare/v0.5.14...v0.5.15) (2025-12-30)
+
+
+### Bug Fixes
+
+* use Expo Record types for boot and updateUser to fix type conversion ([5d9ddf7](https://github.com/daeuk1011/expo-channel-io/commit/5d9ddf7de71b675ddf72e9d3bb975e9ad173c64c))
+
 ## [0.5.14](https://github.com/daeuk1011/expo-channel-io/compare/v0.5.13...v0.5.14) (2025-12-20)
 
 
