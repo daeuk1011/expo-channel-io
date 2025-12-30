@@ -40,23 +40,21 @@ class ExpoChannelIoModule : Module() {
       ChannelIO.setListener(null)
     }
 
-    AsyncFunction("boot") { settings: Map<String, Any?>, promise: Promise ->
+    AsyncFunction("boot") { settings: BootConfigRecord, promise: Promise ->
       try {
-        val pluginKey = settings["pluginKey"] as? String
-        if (pluginKey.isNullOrEmpty()) {
+        val pluginKey = settings.pluginKey
+        if (pluginKey.isEmpty()) {
           promise.reject("INVALID_PLUGIN_KEY", "Plugin key is required", null)
           return@AsyncFunction
         }
 
-        val memberId = settings["memberId"] as? String
-        val memberHash = settings["memberHash"] as? String
-        val profileData = settings["profile"] as? Map<String, Any?>
-        val profile = createProfileFromMap(profileData)
+        val memberId = settings.memberId
+        val memberHash = settings.memberHash
+        val profile = createProfileFromMap(settings.profile)
 
-        val language = parseLanguage(settings["language"] as? String)
-        val appearance = parseAppearance(settings["appearance"] as? String)
-        val channelButtonOption = settings["channelButtonOption"] as? Map<String, Any?>
-        val buttonOption = toChannelButtonOption(channelButtonOption)
+        val language = parseLanguage(settings.language)
+        val appearance = parseAppearance(settings.appearance)
+        val buttonOption = toChannelButtonOptionFromRecord(settings.channelButtonOption)
 
         val bootConfig = BootConfig.create(pluginKey)
           .setMemberId(memberId)
@@ -66,23 +64,23 @@ class ExpoChannelIoModule : Module() {
           .setLanguage(language)
           .setAppearance(appearance)
 
-        (settings["hidePopup"] as? Boolean)?.let {
+        settings.hidePopup?.let {
           bootConfig.setHidePopup(it)
         }
 
-        (settings["trackDefaultEvent"] as? Boolean)?.let {
+        settings.trackDefaultEvent?.let {
           bootConfig.setTrackDefaultEvent(it)
         }
 
-        (settings["unsubscribeEmail"] as? Boolean)?.let {
+        settings.unsubscribeEmail?.let {
           bootConfig.setUnsubscribeEmail(it)
         }
 
-        (settings["unsubscribeTexting"] as? Boolean)?.let {
+        settings.unsubscribeTexting?.let {
           bootConfig.setUnsubscribeTexting(it)
         }
 
-        val hideChannelButtonOnBoot = settings["hideChannelButtonOnBoot"] as? Boolean ?: false
+        val hideChannelButtonOnBoot = settings.hideChannelButtonOnBoot ?: false
         Log.d("ExpoChannelIo", "boot - hideChannelButtonOnBoot: $hideChannelButtonOnBoot")
 
         ChannelIO.boot(bootConfig) { bootStatus, user ->
@@ -155,9 +153,9 @@ class ExpoChannelIoModule : Module() {
       }
     }
 
-    AsyncFunction("updateUser") { userInfo: Map<String, Any?>, promise: Promise ->
+    AsyncFunction("updateUser") { userInfo: UserDataRecord, promise: Promise ->
       try {
-        val userData = createUserDataFromMap(userInfo)
+        val userData = createUserDataFromRecord(userInfo)
         ChannelIO.updateUser(userData) { e: Exception?, user: User? ->
           if (e != null) {
             promise.reject("UPDATE_USER_FAILED", e.message ?: "Unknown error", e)
@@ -430,6 +428,62 @@ class ExpoChannelIoModule : Module() {
     val yMargin = (optionData["yMargin"] as? Number)?.toFloat() ?: 0f
 
     return ChannelButtonOption(position, xMargin, yMargin)
+  }
+
+  private fun toChannelButtonOptionFromRecord(optionData: ChannelButtonOptionRecord?): ChannelButtonOption? {
+    if (optionData == null) return null
+
+    val position = parseButtonPosition(optionData.position)
+    val xMargin = optionData.xMargin?.toFloat() ?: 0f
+    val yMargin = optionData.yMargin?.toFloat() ?: 0f
+
+    return ChannelButtonOption(position, xMargin, yMargin)
+  }
+
+  private fun createUserDataFromRecord(userInfo: UserDataRecord): UserData {
+    val builder = UserData.Builder()
+
+    userInfo.language?.let {
+      builder.setLanguage(parseLanguage(it))
+    }
+
+    userInfo.tags?.let {
+      builder.setTags(it)
+    }
+
+    userInfo.profile?.let { profileData ->
+      val profileMap = mutableMapOf<String, Any>()
+      profileData.forEach { (key, value) ->
+        if (value != null) {
+          profileMap[key] = value
+        }
+      }
+      if (profileMap.isNotEmpty()) {
+        builder.setProfileMap(profileMap)
+      }
+    }
+
+    userInfo.profileOnce?.let { profileOnceData ->
+      val profileOnceMap = mutableMapOf<String, Any>()
+      profileOnceData.forEach { (key, value) ->
+        if (value != null) {
+          profileOnceMap[key] = value
+        }
+      }
+      if (profileOnceMap.isNotEmpty()) {
+        builder.setProfileOnceMap(profileOnceMap)
+      }
+    }
+
+    userInfo.unsubscribeEmail?.let {
+      builder.setUnsubscribeEmail(it)
+    }
+
+    userInfo.unsubscribeTexting?.let {
+      builder.setUnsubscribeTexting(it)
+    }
+
+    return builder.build()
   }
 
   private fun convertBootStatus(status: BootStatus): String {
