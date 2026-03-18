@@ -33,5 +33,5 @@ if (useManagedAndroidSdkVersions) {
 }
 
 dependencies {
-  implementation 'io.channel:plugin-android:13.1.2'
+  implementation 'io.channel:plugin-android:13.3.0'
 }
