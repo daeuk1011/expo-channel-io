@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.18](https://github.com/daeuk1011/expo-channel-io/compare/v0.5.17...v0.5.18) (2026-03-20)
+
+
+### Bug Fixes
+
+* retry npm publish with updated token ([8f47906](https://github.com/daeuk1011/expo-channel-io/commit/8f479066150da779ee840efdd52d9f9bc70fb725))
+
 ## [0.5.17](https://github.com/daeuk1011/expo-channel-io/compare/v0.5.16...v0.5.17) (2026-03-20)
 
 
