@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.16](https://github.com/daeuk1011/expo-channel-io/compare/v0.5.15...v0.5.16) (2026-03-20)
+
+
+### Bug Fixes
+
+* update Channel.io SDK versions for message edit feature ([546dfa4](https://github.com/daeuk1011/expo-channel-io/commit/546dfa4443107f375c7ede47a54eb04da5d7076d))
+
 ## [0.5.15](https://github.com/daeuk1011/expo-channel-io/compare/v0.5.14...v0.5.15) (2025-12-30)
 
 
