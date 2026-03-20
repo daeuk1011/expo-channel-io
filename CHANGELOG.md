@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.17](https://github.com/daeuk1011/expo-channel-io/compare/v0.5.16...v0.5.17) (2026-03-20)
+
+
+### Bug Fixes
+
+* bump release for npm publish ([69a428a](https://github.com/daeuk1011/expo-channel-io/commit/69a428a5c9c61fa379948479d892311d964e3e29))
+
 ## [0.5.16](https://github.com/daeuk1011/expo-channel-io/compare/v0.5.15...v0.5.16) (2026-03-20)
 
 
